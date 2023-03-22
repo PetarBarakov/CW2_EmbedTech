@@ -9,7 +9,9 @@ In this report, we are also going to discuss the timing, architecture, and depen
 
 
 ## Task Identification
-  An identification of all the tasks that are performed by the system with their method of implementation, thread or interrupt.
+
+This section aims to breifly outline the implemented functions for the music synthesiser. 
+
 ### Display update
 ### Scan Keys
 ### CAN transmit
