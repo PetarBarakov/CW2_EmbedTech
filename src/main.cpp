@@ -2,197 +2,11 @@
 #include <U8g2lib.h>
 #include <STM32FreeRTOS.h>
 #include <math.h>
+
 #include <SynthSetup.h>
 #include <KnobControl.h>
 
-
-//Constants
-
-  const int NUMBER_OF_KEYS = 12;
-  const uint32_t sample_frequency = 22000; //22kHz
-  const uint32_t key_A_freq = 440;
-
-  volatile uint32_t currentStepSize;
-  uint32_t step_sizes[NUMBER_OF_KEYS];
-
-  volatile uint32_t key_array[3];
-  volatile uint32_t knob_array;
-  volatile char key_name[2];
-  volatile uint8_t volume_level;
-
-  //CAN variable setup
-  volatile uint8_t TX_Message[8] = {0};
-
-
-  //mutex variable for the key_array variable
-  SemaphoreHandle_t keyArrayMutex;
-  SemaphoreHandle_t knobArrayMutex;
-
-
-  
-
-//Display driver object
-U8G2_SSD1305_128X32_NONAME_F_HW_I2C u8g2(U8G2_R0);
-
-
-uint8_t readCols()
-{
-
-  bool C0_bit = digitalRead(C0_PIN);
-  bool C1_bit = digitalRead(C1_PIN);
-  bool C2_bit = digitalRead(C2_PIN);
-  bool C3_bit = digitalRead(C3_PIN);
-
-  uint8_t column_data = C0_bit + (C1_bit << 1) + (C2_bit << 2) + (C3_bit << 3);
-
-  return column_data;
-  
-}
-
-void setRow(uint8_t rowIdx)
-{
-
-  digitalWrite(REN_PIN, LOW);
-
-  if(rowIdx & 0b001)
-  {
-    digitalWrite(RA0_PIN, HIGH);
-  }else
-  {
-    digitalWrite(RA0_PIN, LOW);
-  }
-  
-  if(rowIdx & 0b010)
-  {
-    digitalWrite(RA1_PIN, HIGH);
-  }else
-  {
-    digitalWrite(RA1_PIN, LOW);
-  }
-  
-  if(rowIdx & 0b100)
-  {
-    digitalWrite(RA2_PIN, HIGH);
-  }else
-  {
-    digitalWrite(RA2_PIN, LOW);
-  }
-
-  digitalWrite(REN_PIN, HIGH);
-
-}
-
-void gen_step_array ()
-{
-  uint32_t current_freq = key_A_freq * pow( pow(2.0, 1.0/12.0), -9); //key C frequency
-
-  for(int i = 0; i < NUMBER_OF_KEYS; i++)
-  {
-    step_sizes[i]= pow(2, 32) * current_freq / sample_frequency;
-    
-    current_freq *= pow(2.0, 1.0/12.0);
-    
-  }
-
-}
-
-uint32_t decode_keys(const uint32_t* step_sizes)
-{
-  uint32_t step = 0;
-  *key_name = ' ';
-  *(key_name + 1) = ' ';
-
-  //there are 3 key readings of interest
-
-  for(int i = 0; i < 3; i++)
-  {
-    uint32_t negated_key = (~(*(key_array + i))) & 0b1111;
-      
-    if(negated_key & 0b0001)
-    {
-      step = *(step_sizes + 4*i + 0);
-      
-      if(i == 0)
-      {
-        *key_name = 'C';
-      }
-      
-      if(i == 1)
-      {
-        *key_name = 'E';
-      }
-      
-      if(i == 2)
-      {
-        *key_name = 'G';
-        *(key_name + 1) = '#';
-      }
-
-      break;      
-    }
-    
-    if (negated_key & 0b10)
-    {
-      step = *(step_sizes + 4*i + 1);
-
-      if(i == 0)
-      {
-        *key_name = 'C';
-        *(key_name + 1) = '#';
-      }else if(i == 1)
-      {
-        *key_name = 'F';
-      }else if(i == 2)
-      {
-        *key_name = 'A';
-      }
-
-      break;
-    }
-    
-    if (negated_key & 0b0100)
-    {
-      step = *(step_sizes + 4*i + 2);
-
-      if(i == 0)
-      {
-        *key_name = 'D';
-      }else if(i == 1)
-      {
-        *key_name = 'F';
-        *(key_name + 1) = '#';
-      }else if(i == 2)
-      {
-        *key_name = 'A';
-        *(key_name + 1) = '#';
-      }
-      
-      break;
-    }
-    
-    if (negated_key & 0b1000)
-    {
-      step = *(step_sizes + 4*i + 3);
-      
-      if(i == 0)
-      {
-        *key_name = 'D';
-        *(key_name + 1) = '#';
-      }else if(i == 1)
-      {
-        *key_name = 'G';
-      }else if(i == 2)
-      {
-        *key_name = 'B';
-      }
-
-
-      break;
-    } 
-  }
-
-  return step;
-}
+// #include <global_variables.h>
 
 void sampleISR()
 {
@@ -203,6 +17,134 @@ void sampleISR()
 
   analogWrite(OUTR_PIN, Vout + 128);
 
+}
+
+// Functions for the different tasks
+
+
+uint32_t decode_keys(const uint32_t* step_sizes)
+{
+  uint32_t step = 0;
+
+  //there are 3 key readings of interest
+
+  for(int i = 0; i < 3; i++)
+  {
+    uint32_t negated_key = (~(*(key_array + i))) & 0b1111;
+      
+    if(negated_key & 0b0001)
+    {
+      step = *(step_sizes + 4*i + 0);
+    }
+    
+    if (negated_key & 0b10)
+    {
+      step = *(step_sizes + 4*i + 1);
+    }
+    
+    if (negated_key & 0b0100)
+    {
+      step = *(step_sizes + 4*i + 2);
+    }
+    
+    if (negated_key & 0b1000)
+    {
+      step = *(step_sizes + 4*i + 3);
+    } 
+
+  }
+
+  return step;
+}
+
+void decode_key_names(char* key_name_in, uint8_t number_of_keys_pressed, uint32_t* pressed_steps)
+{
+  char key_name_string [3*number_of_keys_pressed] = {}; // two characters per key + spaces in between
+
+  for(int i = 0; i < number_of_keys_pressed; i++)
+  {
+    if(*(pressed_steps + i) == step_sizes[0])
+    {
+      key_name_string[3*i] = 'C';
+      key_name_string[3*i+1] = ' ';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[1])
+    {
+      key_name_string[3*i] = 'C';
+      key_name_string[3*i+1] = '#';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[2])
+    {
+      key_name_string[3*i] = 'D';
+      key_name_string[3*i+1] = ' ';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[3])
+    {
+      key_name_string[3*i] = 'D';
+      key_name_string[3*i+1] = '#';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[4])
+    {
+      key_name_string[3*i] = 'E';
+      key_name_string[3*i+1] = ' ';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[5])
+    {
+      key_name_string[3*i] = 'F';
+      key_name_string[3*i+1] = ' ';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[6])
+    {
+      key_name_string[3*i] = 'F';
+      key_name_string[3*i+1] = '#';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[7])
+    {
+      key_name_string[3*i] = 'G';
+      key_name_string[3*i+1] = ' ';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[8])
+    {
+      key_name_string[3*i] = 'G';
+      key_name_string[3*i+1] = '#';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[9])
+    {
+      key_name_string[3*i] = 'A';
+      key_name_string[3*i+1] = ' ';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[10])
+    {
+      key_name_string[3*i] = 'A';
+      key_name_string[3*i+1] = '#';
+      key_name_string[3*i+2] = ' ';
+    }
+    else if(*(pressed_steps + i) == step_sizes[11])
+    {
+      key_name_string[3*i] = 'B';
+      key_name_string[3*i+1] = ' ';
+      key_name_string[3*i+2] = ' ';
+    }
+    else
+    {
+      key_name_string[3*i] = ' ';
+      key_name_string[3*i+1] = ' ';
+      key_name_string[3*i+2] = ' ';
+    }
+  }
+
+  Serial.println(key_name_string);
+  strcpy(key_name_in, key_name_string);
 }
 
 void volume_control(uint8_t knobAB_reading, uint8_t knobS_reading)
@@ -216,16 +158,12 @@ void volume_control(uint8_t knobAB_reading, uint8_t knobS_reading)
   __atomic_store_n(&volume_level, local_volume_level, __ATOMIC_RELAXED);
 }
 
-// Functions for the different tasks
-
 
 void scanKeysTask(void * pvParameters) {
 
   
   const TickType_t xFrequency = 30/portTICK_PERIOD_MS;
   TickType_t xLastWakeTime = xTaskGetTickCount();
-
-  gen_step_array(); 
 
   while (true)
   {
@@ -348,11 +286,18 @@ void displayUpdateTask(void* pvParameters)
 
     
     xSemaphoreGive(keyArrayMutex);  
+
+    uint32_t step[1] = {currentStepSize};
   
     //print step size
     u8g2.setCursor(2, 20);
-    u8g2.print(key_name[0]);
-    u8g2.print(key_name[1]);
+
+    // Serial.println(step[1]);
+    char name_string[3];
+    decode_key_names(name_string, 3, step);
+    Serial.print("from main: ");
+    Serial.println(name_string);
+    u8g2.print(name_string);
 
     //print volume
     u8g2.setCursor(80, 10);
@@ -377,6 +322,8 @@ void setup() {
   Serial.begin(9600);
 
   PinModeSynthSetUp();
+  gen_step_array(); 
+
 
   //Initialise display
   setOutMuxBit(DRST_BIT, LOW);  //Assert display logic reset
