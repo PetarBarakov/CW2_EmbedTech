@@ -3,20 +3,21 @@
 
 The report presented here is to deliver a comprehensive analysis of the Music Synthesiser, which is implemented for Embedded System Coursework 2 by EmbedTech.
 
-The Music Synthesiser is a real-time operating system, which is configured with all the essential functions such as key pressing and detection, volume control, octave variations, display screen, etc. It is also developed with several advanced features including outputting different waveforms (sinusoidal wave, square wave, triangular wave) and enabling polyphony.
-
-In this report, we are also going to discuss the timing, architecture, and dependencies of the overall system, so that the application can be further studied and analysed.
+The Music Synthesiser is a real-time operating system, which is configured with all the essential functions such as key pressing and detection, volume control, octave variations, display screen, etc. It is also developed with several advanced features including outputting different waveforms (sinusoidal wave, square wave, triangular wave), ...
 
 
 ## Task Identification
-
-This section aims to breifly outline the implemented functions for the music synthesiser. 
-
+  An identification of all the tasks that are performed by the system with their method of implementation, thread or interrupt.
 ### Display update
+  Updates the display with the required information. Shows the user the volume level, octave, waveform choice, notes played, CAN messages, mode choice. Notes are shown in their order.
 ### Scan Keys
 ### CAN transmit
 ### CAN receive / Decode task
 ### Sample task
+  This task changes the output buffer ready for the interrupt to send it out.
+### CAN transmission interrupt
+### CAN receive interrupt
+### Double buffer interrupt
 
 
 ## Timing analysis
