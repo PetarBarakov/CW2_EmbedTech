@@ -8,7 +8,8 @@ The Music Synthesiser is a real-time operating system, which is configured with 
 In this report, we are also going to discuss the timing, architecture, and dependencies of the overall system, so that the application can be further studied and analysed.
 
 ## Task Identification
-  An identification of all the tasks that are performed by the system with their method of implementation, thread or interrupt.
+This section aims to briefly outline the implemented functions of the music synthesiser.
+
 ### Display update
   Updates the display with the required information. Shows the user the volume level, octave, waveform choice, notes played, CAN messages, mode choice. Notes are shown in their order.
 ### Scan Keys
