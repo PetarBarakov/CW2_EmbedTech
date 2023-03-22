@@ -1,8 +1,9 @@
-# HELLLOOOOO
-## Hello again everyone!!
-### Tsoiskdncvo
-Lets actually start going with this stuff ******
+# Embedded Systems Coursework 2
+## Introduction
 
+The report presented here is to deliver a comprehensive analysis of the Music Synthesiser, which is implemented for Embedded System Coursework 2 by EmbedTech.
+
+The Music Synthesiser is a real-time operating system, which is configured with all the essential functions such as key pressing and detection, volume control, octave variations, display screen, etc. It is also developed with several advanced features including outputting different waveforms (sinusoidal wave, square wave, triangular wave), ...
 
 
 ## Timing analysis
