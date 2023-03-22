@@ -6,7 +6,7 @@ Lets actually start going with this stuff ******
 
 
 
-| Task            | Initiation Interval (ms) |Execution time (μs)| RMS priority | $\(t<sub>n</sub>/t<sub>i</sub>)$ | (t<sub>n</sub>/t<sub>i</sub>)*T<sub>i</sub> (μs)|
+| Task            | Initiation Interval (ms) |Execution time (μs)| RMS priority | $\(t_n/t_i)$ | (t<sub>n</sub>/t<sub>i</sub>)*T<sub>i</sub> (μs)|
 | ----------------| -------------------------|-------------------|--------------|-------|-------------------------------------------------|
 | Scan Keys Task  | 20                       | 164.8125          | 4            | 5     | 824.06                                          |
 | Decode Task     | 100                      | 17424.03125       | 1            | 1.    | 17,424.03                                       |
