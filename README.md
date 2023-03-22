@@ -15,4 +15,5 @@ Lets actually start going with this stuff ******
 | Sample task     | 5  | 583               | 5   | 20    | 11,660  | 11.66|
 
 
+Total Latency = 36.2 ms
 Total CPU utilization = 36.2%
