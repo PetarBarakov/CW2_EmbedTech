@@ -63,11 +63,16 @@ This is the sample interrupt that is used to output sounds from the keyboards by
 | CAN TX Interrupt                | 0.7  | 24       | interrupt  | 143    | 3,432        | 3.43|
 | CAN RX Interrupt                | 0.7  | 24       | interrupt  | 143    | 3,432        | 3.43|
 | Sample Interrupt                | 0.04545  | 9.625  | interrupt| 2201    | 21,184.625  | 21.18|
-
-
-The theoretical minimum initiaion intervals (deadlines) and measured maximum execution times for all the tasks of the system are recorded in the table above. The iniation interval of scan keys thread and display update thread is set based on the coursework requirement. The initiation interval of decode thread and CAN transmit thread is calculated based on the worst-case scenario that the scan key task is sending 12 messages per 20 ms, the CAN message transmission time is 0.7 ms, the message queues both have a length of 36. The audio sample generation thread is chosen to fill two buffers of size 110, which is set based on limiting the upper bound of latency of generating sound to 10 ms, so that the latency will not be perceptible by humans.
 Total Latency = 67.62 ms
 Total CPU utilization = 67.58%
+
+The theoretical minimum initiaion intervals (deadlines) and measured maximum execution times for all the tasks of the system are recorded in the table above. The iniation interval of scan keys thread and display update thread is set based on the coursework requirement. The initiation interval of decode thread and CAN transmit thread is calculated based on the worst-case scenario that the scan key task is sending 12 messages per 20 ms, the CAN message transmission time is 0.7 ms, the message queues both have a length of 36. The audio sample generation thread is chosen to fill two buffers of size 110, which is set based on limiting the upper bound of latency of generating sound to 10 ms, so that the latency will not be perceptible by humans. The initiation intervals of CAN TX and RX interrupts are set to the transmission time of one CAN message. The initiation interval of sample interrupt is set to 22kHz timer period.
+
+The execution time is measured manually based on the worst-case scenario. For scan key thread, it is sending 12 messages per iteration. For display update thread, it is displaying all possible information. For decode and CAN transmit thread, it is receiving or transmitting three messages from the queue. For audio sample generation thread, it is generating the most complex waveform, which is sinusoidal wave. For CAN TX and RX interrupt, it is sending or receiving one CAN message. For sample interrupt, it is simply time taken for one iteration.
+
+The rate monotonic scheduler will assign priority to each task based on their initiation intervals, which are also shown in the table. Based on critical instant analysis of the system, the total latency is 67.62 ms, which is less than the initiation interval of the lowest priority task. Thus, all deadlines are met under worst case conditions.
+
+The total CPU utilization is calculated to be 67.58%, which is less than 90% and should be considered in a safe range.
 
 # Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronisation
   There are 5 global variables being shared between threads and interrupts
