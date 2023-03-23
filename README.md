@@ -71,7 +71,9 @@ Total CPU utilization = 58.25%
 
   In total there are 5 mutexes to protect the different variables. The last mutex (not previously mentioned) is used to protect the sending of CAN messages.
 
-  Atomic accessing of variables is also used throughout the code for synchronization purposes.
+  Atomic accessing of variables are also used throughout the code for synchronization purposes.
+  
+  It should be noted that the the evey message is saved in a queue before it is transmitted and after it is received. These queues are called **msgInQ** and **msgOutQ** are used as they allow for the faster completion of the interupts and ensure that no data is lost between transmission and when it is decoded.  
 
 ## Inter-Task Blocking Dependencies
 ![Screenshot](Dependencies.svg)
@@ -93,4 +95,3 @@ The music synthesizer supports polyphony, in which up to 12 keys can be played t
 
 ### User-friendly Display Interface
 The interface has been designed in a way to effectively show information about keyboard settings and notes being played, through deliberate choice of fonts and symbols for different waveforms, as well as clear indication of the types of settings being displayed.
-
