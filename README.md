@@ -16,7 +16,7 @@ The Music Synthesiser is a real-time operating system, which is configured with 
 
 In this report, we are also going to discuss the timing, data structure and blocking dependencies involved in the overall system, so that the application can be further studied and analysed.
 
-## Task Identification
+# Task Identification
 This section aims to briefly outline the implemented tasks of the music synthesiser.
 
 ## Scan Keys Thread
@@ -64,6 +64,7 @@ This is the sample interrupt that is used to output sounds from the keyboards by
 | CAN TX Interrupt                | 0.7  | 24       | interrupt  | 143    | 3,432        | 3.43|
 | CAN RX Interrupt                | 0.7  | 24       | interrupt  | 143    | 3,432        | 3.43|
 | Sample Interrupt                | 0.04545  | 9.625  | interrupt| 2201    | 21,184.625  | 21.18|
+
 Total Latency = 67.62 ms
 Total CPU utilization = 67.58%
 
@@ -76,7 +77,8 @@ The rate monotonic scheduler will assign priority to each task based on their in
 The total CPU utilization is calculated to be 67.58%, which is less than 90% and should be considered in a safe range.
 
 # Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronisation
-  There are 5 global variables being shared between different threads and interrupts
+In the system, it is ensured through the usage of mutex and atomic access, that all shared data have safe access and synchronisation.
+There are 5 global arrays being shared between different threads and interrupts.
   * **currentStepSize** is an unsigned 32 bit integer array of size 12, storing the step size value corresponding to each of the 12 keys, which will then be used as counting step size for the phase accumulator. It is written in the Scan Key Task and Decode Task, and read in the Sample Task. This is protected by its own mutex.
   * **keyArray** is an unsigned 8 bit integer array of size 7, storing the readings from the key matrix, which contain the information about whether the keys and knobs have been pressed or rotated. It is written in the Scan Key Task and read in the Display Update Task. This is protected by its own mutex.
   * **RX_Message** is an unsigned 8 bit integer array of size 8, storing the CAN message received. It is written in the Decode Task and read in the Display Update Task. This is protected by its own mutex.
