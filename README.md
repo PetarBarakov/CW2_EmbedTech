@@ -1,11 +1,11 @@
 # Table of Contents
 
 1. [Introduction](#introduction)
-2. [Task Identification](#TaskIdentification)
-3. [Task timing Charachterisation](#TaskTimingCharachterization,CriticalInstantAnalysisandQuantificationonCPUUtilization)
-4. [Data structures](#SharedDataStructures,MethodsUsedtoGuaranteeSafeAccessandSynchronization)
-5. [Dependencies](#Inter-TaskBlockingDependencies)
-6. [Advanced Features](#AdvancedFeatures)
+2. [Task Identification](#taskidentification)
+3. [Task timing Charachterisation](#tasktimingcharachterizationcriticalinstantanalysisandquantificationoncpuutilization)
+4. [Data structures](#shareddatastructuresmethodsusedtoguaranteesafeaccessandsynchronization)
+5. [Dependencies](#intertaskblockingdependencies)
+6. [Advanced Features](#advancedfeatures)
 
 ## Introduction
 
