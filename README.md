@@ -22,7 +22,7 @@ This section aims to briefly outline the implemented tasks of the music synthesi
 ### Double buffer interrupt
 
 
-## Timing analysis
+## Task Timing Charaterisation, Critical Instant Analysis and Quantification of CPU Utilization
 | Task   | Initiation Interval (ms) |Execution time (μs)| RMS priority | $(\frac{t_n}{t_i})$ | $(\frac{t_n}{t_i})*T_i$ (μs)| $(\frac{T_i}{t_i})$ (%)|
 | ----------------| -------------------------|-------------------|--------------|-------|-------------------------------------------------| ----|
 | Scan Keys Task  | 20   | 164.8125          | 4  | 5     | 824.06   | 0.824 | 
@@ -34,3 +34,7 @@ This section aims to briefly outline the implemented tasks of the music synthesi
 
 Total Latency = 36.2 ms
 Total CPU utilization = 36.2%
+
+## Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronisation
+
+## Inter-Task Blocking Dependencies
