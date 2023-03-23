@@ -23,19 +23,24 @@ This section aims to briefly outline the implemented tasks of the music synthesi
 
 
   This task changes the output buffer ready for the interrupt to send it out.
-### CAN transmission interrupt
-### CAN receive interrupt
-### Double buffer interrupt
+### CAN Transmission Interrupt
+### CAN Receive Interrupt
+### Sample Interrupt
+Double buffer.
 
 
 ## Task Timing Charaterisation, Critical Instant Analysis and Quantification of CPU Utilization
 | Task   | Initiation Interval (ms) |Execution time (μs)| RMS priority | $(\frac{t_n}{t_i})$ | $(\frac{t_n}{t_i})*T_i$ (μs)| $(\frac{T_i}{t_i})$ (%)|
 | ----------------| -------------------------|-------------------|--------------|-------|-------------------------------------------------| ----|
-| Scan Keys Task  | 20   | 164.8125          | 4  | 5     | 824.06   | 0.824 | 
+| Scan Keys  | 20   | 164.8125          | 4  | 5     | 824.06   | 0.824 | 
 | Display Update    | 100 | 17424.03125       | 1    | 1     | 17,424.03| 17.42|
-| Decode Task and Can Receive    | 25.2  | 1205.90625        | 3       | 3.97  | 4,785.34  | 4.79 |
+| CAN Receive and Decode    | 25.2  | 1205.90625        | 3       | 3.97  | 4,785.34  | 4.79 |
 | CAN Transmit    | 60  | 905.8125          | 2     | 1.67  | 1,509.69   | 1.51|
-| Sample task     | 5  | 583               | 5   | 20    | 11,660  | 11.66|
+| Audio Sample Generation     | 5  | 583               | 5   | 20    | 11,660  | 11.66|
+| CAN TX Interrupt     | 5  | 583               | 5   | 20    | 11,660  | 11.66|
+| CAN RX Interrupt     | 5  | 583               | 5   | 20    | 11,660  | 11.66|
+| Sample Interrupt     | 5  | 583               | 5   | 20    | 11,660  | 11.66|
+
 
 
 Total Latency = 36.2 ms
