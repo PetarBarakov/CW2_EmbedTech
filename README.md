@@ -70,4 +70,6 @@ The music synthesizer can output audio in the form of sinusoidal, square and tri
 ### Polyphony
 The music synthesizer supports polyphony, in which up to 12 keys can be played together at once. The output sound is clipped at the maximum output value.
 
+### User-friendly Display Interface
+The interface has been designed in a way to show information about keyboard settings and notes being played, through deliberate choice of fonts and symbols for different waveforms.
 
