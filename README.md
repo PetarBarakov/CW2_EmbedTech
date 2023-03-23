@@ -68,6 +68,6 @@ Our advanced music synthesiser is designed and implemented to introduce more fea
 The music synthesizer can output audio in the form of sinusoidal, square and triangular waveform, in addition to the standard sawtooth wave. The waveform generated can be changed through turning the second leftmost knob. The current waveform chosen will be shown on the OLED display, in which 0 indicates sawtooth wave, 1 indicates sinusoidal wave, 2 indicates square wave and 3 indicates triangular wave.
 
 ### Polyphony
-The music synthesizer supports polyphony, in which up to 12 keys can be played together at once. 
+The music synthesizer supports polyphony, in which up to 12 keys can be played together at once. The output sound is clipped at the maximum output value.
 
 
