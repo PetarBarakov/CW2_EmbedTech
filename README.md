@@ -54,7 +54,7 @@ Total CPU utilization = 36.2%
 
 The dependencies of the music synthesiser system is shown as above. The diagram is aimed to use different shapes for identifying different tasks, so to clearly present the relationships. In the diagram, the ellipses represent the threads, while the rectangles and the rounded rectangles are the interrupts and queues respectively.
 
-<mark>Display Update</mark>
+'Display Update', which holds the highest priority, depends only on the display hardware of the keyboard. While the 'CAN Receive and Decode' relies on 'msgInQ', which is the queue to store incoming message. The latter one therefore is associated with the receiving end, which is mainly controlled by the hardware part.
 
 ## Advanced Features
 
