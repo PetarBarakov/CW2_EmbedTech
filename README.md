@@ -16,7 +16,7 @@ Key scanning is one of the most fundamental functions of the music synthesiser. 
 
 ### Display Update - Thread
 
-Through the OLED display screen of the keyboard, the function is targeted at updating all the useful information of the keyboard execution. By using the library functions from the u8g2 driver, any information including the data that is previously stored in the array of scan keys function can be printed out and displayed on the screen. By calling different libraries, the display can be extended to include customised data types, font sizes, symbols, and exact locations depending on pixels.
+Through the OLED display screen of the keyboard, this task is updating all the useful information of the keyboard execution. By using the library functions from the u8g2 driver, any information including the data that is previously stored in the array of scan keys function can be printed out and displayed on the screen. By calling different libraries, the display can be extended to include customised data types, font sizes, symbols, and exact locations depending on pixels.
 
 ### CAN Message Receiving / Decoding task - Thread
 
