@@ -10,7 +10,9 @@
 # Introduction
 
 The report presented here is to deliver a comprehensive analysis of the Music Synthesiser, which is implemented for Embedded System Coursework 2 by EmbedTech.
+
 The Music Synthesiser is a real-time operating system, which is configured with all the essential functions including key detection, audio generation, volume control, octave variations, display of relevant settings and notes, as well as sending or receiving notes depending on configurations. It is also developed with several advanced features including outputting different waveforms (sinusoidal wave, square wave, triangular wave), enabling polyphony and carefully designed user interface.
+
 In this report, we are also going to discuss the timing, data structure and blocking dependencies involved in the overall system, so that the application can be further studied and analysed.
 
 ## Task Identification
@@ -18,7 +20,9 @@ This section aims to briefly outline the implemented tasks of the music synthesi
 
 ## Scan Keys - Thread
 
-Key scanning is one of the most fundamental functions of the music synthesiser. By pressing each individual key, the corresponding row and column location is chosen, which therefore detects the exact note. The row and column information stored in a two-dimensional array, which contains the note and octave stage that are ready to be transmitted for further stages. In this function, the knob rotations are also manipulated to provide different functions. In particular, knob 3 and knob 2 are used for varying the volume and octave stages, and they are directly controlled through the key scanning function. While knob 2 and 1 are only called for definition, and their information is transferred to a global variable, which is used in other functions.
+
+Key scanning is one of the most fundamental functions of the music synthesiser. By pressing each individual key or turning a knob, the corresponding row and column location of key matrix is set low, which enables the exact note to be detected. The readings from the key matrix are then stored in an array. The information are then decoded to the notes being pressed and octave stages being set, which are then put as a two dimensional array to output message queue to be sent by CAN message transmission task. In this task, the knob rotations are also decoded to provide different functions. In particular, knob 3 and knob 2 are used respectively for varying the volume and octave stages. Pressing knob 3 and 2 are used to set the keyboard to receiver and sender mode respectively. While rotation of knob 1 is transferred to a global variable, which is used in the audio sample generation task to select waveforms.
+
 
 ## Display Update - Thread
 
