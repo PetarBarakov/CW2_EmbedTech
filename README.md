@@ -6,6 +6,7 @@
 4. [Data structures](#shared-data-structures-methods-used-to-guarantee-safe-access-and-synchronisation)
 5. [Dependencies](#inter-task-blocking-dependencies)
 6. [Advanced Features](#advanced-features)
+7. [Video Instructions](#video-instructions)
 
 # Introduction
 
@@ -113,3 +114,7 @@ The interface has been designed in a way to effectively show information about k
 ## Keyboard Autodetection (not completed)
 
 In the current design, whenever keyboards are chained together, all of their variables (such as waveform, octave and volume) need to be set seperately set. This can be avoided if the keyboards are better aware of each other existance and are able to comunicate their position and input variables. This was attempted by modifying the format of messages to include the additional information. However, bugs were encountered that prevented the full implementation of this subtask.
+
+# Video Instructions
+https://imperiallondon-my.sharepoint.com/:v:/r/personal/pb520_ic_ac_uk/Documents/EmbedTech_CW2_Video%201.mov?csf=1&web=1&e=MLhpFV
+
