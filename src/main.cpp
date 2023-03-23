@@ -3,13 +3,10 @@
 #include <STM32FreeRTOS.h>
 #include <ES_CAN.h>
 
-// #include <AutoDetection.h>
-// #include <KnobControl.h>
 #include <ScanKeysTask.h>
 #include <SampleTask.h>
 #include <DisplayUpdateTask.h>
 #include <DecodeTask.h>
-
 
 
 //Constants
@@ -80,7 +77,6 @@
 U8G2_SSD1305_128X32_NONAME_F_HW_I2C u8g2(U8G2_R0);
 
 #define SAMPLE_BUFFER_SIZE 110
-//256
 
 uint8_t sampleBuffer0[SAMPLE_BUFFER_SIZE];
 uint8_t sampleBuffer1[SAMPLE_BUFFER_SIZE];
@@ -116,6 +112,7 @@ void setOutMuxBit(const uint8_t bitIdx, const bool value) {
 
 //double ISR
 void doubleISR(){
+    //interrupt for outputting audio samples, using a double buffer
     static uint32_t readCtr = 0;
 
     if (readCtr == SAMPLE_BUFFER_SIZE) {
@@ -132,18 +129,10 @@ void doubleISR(){
 
 //ISR for Receiving CAN
 void CAN_RX_ISR (void) {
-   /*#ifdef TEST_CAN_RX_ISR
-	  uint32_t startTime = micros();
-    #endif*/
 	  uint8_t RX_Message_ISR[8];
 	  uint32_t ID = 0x123;
-    //uint32_t ID = 0x120;
 	  CAN_RX(ID, RX_Message_ISR);
 	  xQueueSendFromISR(msgInQ, RX_Message_ISR, NULL);
-/*
-    #ifdef TEST_CAN_RX_ISR
-	  Serial.println(micros()-startTime);
-    #endif*/
 }
 
 //create the ISR which will give the semaphore each time a mailbox becomes available
@@ -156,24 +145,16 @@ void CAN_TX_ISR (void) {
 
 //transmit thread
 void CAN_TX_Task (void * pvParameters) {
-	//uint8_t msgOut[8];
-  //bool localIfSender = false;
 
   #ifdef TEST_TX
-  //uint8_t RX_Message_test[8]={0};
-  //uint32_t ID = 0x123;
-  //CAN_TX(ID, TX_Message);
-  //CAN_RX(ID, RX_Message_local);
-	//xQueueSendFromISR(msgInQ, RX_Message_test, NULL);
+
   loopCondition = true;
   uint8_t msgOut[8];
   
   while(loopCondition){
   xQueueReceive(msgOutQ, msgOut, portMAX_DELAY);
   xSemaphoreTake(CAN_TX_Semaphore, portMAX_DELAY);
-  //uint32_t ID = 0x123;
-  //CAN_TX(ID, TX_Message);
-  //CAN_RX(ID, RX_Message_local);
+
   #endif
 
   #ifndef TEST_TX
@@ -182,16 +163,7 @@ void CAN_TX_Task (void * pvParameters) {
   xQueueReceive(msgOutQ, msgOut, portMAX_DELAY);
   xSemaphoreTake(CAN_TX_Semaphore, portMAX_DELAY);
   #endif
-    //xSemaphoreTake(senderBoolMutex, portMAX_DELAY);
-    //localIfSender = ifSender;
-    //xSemaphoreGive(senderBoolMutex);
-    //if(ifSender){
-	  //xQueueReceive(msgOutQ, msgOut, portMAX_DELAY);
-    //xSemaphoreTake(senderBoolMutex, portMAX_DELAY);
-    //localIfSender = ifSender;
-    //xSemaphoreGive(senderBoolMutex);
-		//xSemaphoreTake(CAN_TX_Semaphore, portMAX_DELAY);
-    //if(localIfSender){
+
 		CAN_TX(0x123, msgOut);
 
     #ifdef TEST_TX
@@ -199,9 +171,6 @@ void CAN_TX_Task (void * pvParameters) {
     xSemaphoreGive(CAN_TX_Semaphore);
     #endif
 
-    //}
-    //}
-    //xSemaphoreGive(senderBoolMutex);
     //Serial.printf("\n\r[2] Min available stack size %d * %d bytes\n\r", uxTaskGetStackHighWaterMark(NULL), sizeof(portBASE_TYPE));
 	}
 }
@@ -241,16 +210,11 @@ void setup() {
   TIM_TypeDef *Instance = TIM1;
   HardwareTimer *sampleTimer = new HardwareTimer(Instance);
   sampleTimer->setOverflow(22000, HERTZ_FORMAT);
-  sampleTimer->attachInterrupt(doubleISR);
+  //sampleTimer->attachInterrupt(doubleISR);
   #ifndef DISABLE_SAMPLE_ISR
   //sampleTimer->attachInterrupt(sampleISR);
   //double ISR
   sampleTimer->attachInterrupt(doubleISR);
-  #endif
-  #ifdef DISABLE_SAMPLE_ISR
-  //sampleTimer->attachInterrupt(sampleISR);
-  //double ISR
-  //sampleTimer->attachInterrupt(CAN_RX_ISR);
   #endif
   sampleTimer->resume();
 
@@ -258,6 +222,7 @@ void setup() {
   
   //initialize and run the thread
   #ifndef DISABLE_THREADS
+  //#endif
   TaskHandle_t scanKeysHandle = NULL;
   xTaskCreate(
   scanKeysTask,		/* Function that implements the task */
@@ -267,31 +232,35 @@ void setup() {
   NULL,			/* Parameter passed into the task */
   4,			/* Task priority */
   &scanKeysHandle );  /* Pointer to store the task handle */
-  
+  #endif
+  #ifndef DISABLE_THREADS
     //initialize and run the thread
   TaskHandle_t displayUpdateHandle = NULL;
   xTaskCreate(
   displayUpdateTask,		/* Function that implements the task */
   "displayUpdate",		/* Text name for the task */
-  362,      		/* Stack size in words, not bytes */
+  370,      		/* Stack size in words, not bytes */
   //64 byte stack not large enough
   NULL,			/* Parameter passed into the task */
   1,			/* Task priority */
   &displayUpdateHandle );  /* Pointer to store the task handle */
-  
-  
+
+ 
    //initialize and run the thread
   TaskHandle_t decodeHandle = NULL;
   xTaskCreate(
   decodeTask,		/* Function that implements the task */
   "decode",		/* Text name for the task */
-  1024,      		/* Stack size in words, not bytes */
+  283,      		/* Stack size in words, not bytes */
   //64 byte stack not large enough
   NULL,			/* Parameter passed into the task */
   3,			/* Task priority */
   &decodeHandle );  /* Pointer to store the task handle */
+   #endif
   
-  #endif
+
+  #ifndef DISABLE_THREADS
+  
 
   
   
@@ -307,7 +276,7 @@ void setup() {
   2,			/* Task priority */
   &transmitHandle );  /* Pointer to store the task handle */
 
-  #ifndef DISABLE_THREADS
+  
 
   
   
@@ -316,7 +285,7 @@ void setup() {
   xTaskCreate(
   sampleTask,		/* Function that implements the task */
   "sample",		/* Text name for the task */
-  321,      		/* Stack size in words, not bytes */
+  2048,      		/* Stack size in words, not bytes */
   //64 byte stack not large enough
   NULL,			/* Parameter passed into the task */
   5,			/* Task priority */
@@ -350,28 +319,12 @@ void setup() {
   #ifdef TEST_SCANKEYS
   msgOutQ = xQueueCreate(384,8);
   #endif
-  #ifdef TEST_TX
-  //msgOutQ = xQueueCreate(384,8);
-  #endif
   #ifdef TEST_CAN_RX_ISR
   msgInQ = xQueueCreate(384,8);
   #endif
-  //#ifdef TEST_DECODE
-  //msgInQ = xQueueCreate(36,8);
-  //#endif
 
   //initialize CAN
-  #ifdef TEST_SCANKEYS
-  //CAN_Init(true);
-  #endif
-  #ifndef TEST_SCANKEYS
-  //CAN_Init(false);
-  #endif
 
-  //CAN_Init(false);
-
-  //CAN_Init(true);
-  //setCANFilter(0x123,0x7ff);
   #ifndef DISABLE_CAN_ISR
   CAN_Init(false);
   setCANFilter(0x123,0x7ff);
@@ -387,7 +340,6 @@ void setup() {
   CAN_RegisterTX_ISR(CAN_TX_ISR);
   CAN_Start();
   #endif
-  //CAN_Start();
   
   #ifdef TEST_SCANKEYS
 	uint32_t startTime = micros();
@@ -402,8 +354,7 @@ void setup() {
 
   #ifdef TEST_DISPLAY
 	uint32_t startTime = micros();
-  //Serial.println(startTime);
-	for (int iter = 0; iter < 32; iter++) {
+	for (int iter = 0; iter < 3; iter++) {
     //32
     displayUpdateTask(NULL);
 	}
@@ -412,22 +363,16 @@ void setup() {
   #endif
 
   #ifdef TEST_DECODE
-  //uint8_t RX_Message_Test[8] = {'P', 5, 3,0,0,0,0,0};
   uint8_t RX_Message_Test[8] = {'P', 3, 5,0,0,0,0,0};
   uint8_t RX_Message_Test1[8] = {'R', 6, 7,0,0,0,0,0};
   uint8_t RX_Message_Test2[8] = {'P', 2, 11,0,0,0,0,0};
-    //RX_Message_ISR[8];
-  //uint32_t ID = 0x123;
-  //for (int iter = 0; iter < 32; iter++) {
+
   xQueueSend(msgInQ, RX_Message_Test,portTICK_PERIOD_MS);
   xQueueSend(msgInQ, RX_Message_Test1,portTICK_PERIOD_MS);
   xQueueSend(msgInQ, RX_Message_Test2,portTICK_PERIOD_MS);
-  //}
-	//for (int iter = 0; iter < 1; iter++) {
-    //32
+
   uint32_t startTime = micros();
   for (int iter = 0; iter < 3; iter++) {
-    //32
     decodeTask(NULL);
     
 	}
@@ -447,7 +392,6 @@ void setup() {
 	uint32_t startTime = micros();
   Serial.println(startTime);
 	for (int iter = 0; iter < 3; iter++) {
-    //32
     CAN_TX_Task(NULL);
 	}
 	Serial.println(micros()-startTime);
@@ -458,7 +402,6 @@ void setup() {
 	uint32_t startTime = micros();
   Serial.println(startTime);
 	for (int iter = 0; iter < 32; iter++) {
-    //32
     sampleTask(NULL);
 	}
 	Serial.println(micros()-startTime);
@@ -467,18 +410,9 @@ void setup() {
   
   #ifdef TEST_CAN_RX_ISR
 	uint32_t startTime = micros();
-  //Serial.println(startTime);
 	for (int iter = 0; iter < 32; iter++) {
-    //32
     CAN_RX_ISR();
 	}
-    //CAN_RX_ISR();
-    /*Serial.println("World");
-  	uint8_t RX_Message_ISR[8] = {0};
-	  uint32_t ID = 0x123;
-    //uint32_t ID = 0x120;
-	  CAN_RX(ID, RX_Message_ISR);*/
-	  //xQueueSendFromISR(msgInQ, RX_Message_ISR, NULL);
 
 	Serial.println(micros()-startTime);
 	while(1);
@@ -486,35 +420,21 @@ void setup() {
 
   #ifdef TEST_CAN_TX_ISR
 	uint32_t startTime = micros();
-  //Serial.println(startTime);
 	for (int iter = 0; iter < 3; iter++) {
-    //32
     CAN_TX_Task(NULL);
 	}
-    //CAN_RX_ISR();
-    /*Serial.println("World");
-  	uint8_t RX_Message_ISR[8] = {0};
-	  uint32_t ID = 0x123;
-    //uint32_t ID = 0x120;
-	  CAN_RX(ID, RX_Message_ISR);*/
-	  //xQueueSendFromISR(msgInQ, RX_Message_ISR, NULL);
+
 
 	Serial.println(micros()-startTime);
 	while(1);
   #endif
 
-  //Serial.begin(9600);
-  //Serial.println("World");
+
   #ifdef TEST_DOUBLE_ISR
 	uint32_t startTime = micros();
-  //Serial.println(startTime);
 	for (int iter = 0; iter < 32; iter++) {
-    //32
     doubleISR();
 	}
-    //CAN_RX_ISR();
-
-	  //xQueueSendFromISR(msgInQ, RX_Message_ISR, NULL);
 
 	Serial.println(micros()-startTime);
 	while(1);

@@ -69,6 +69,18 @@
   //received message
   extern uint8_t RX_Message[8];
 
+  //#define TEST_SCANKEYS 1
+  //#define TEST_DISPLAY  1
+  //#define TEST_DECODE  1
+  //#define TEST_TX  1
+  //#define TEST_SAMPLE  1
+  //#define TEST_DOUBLE_ISR 1
+  //#define TEST_CAN_RX_ISR 1
+  //#define TEST_CAN_TX_ISR 1
+  //#define DISABLE_SAMPLE_ISR 1
+  //#define DISABLE_THREADS 1
+  //#define DISABLE_CAN_ISR 1
+
   
 
 //Display driver object
@@ -92,6 +104,7 @@ void setRow(uint8_t rowIdx){
 
 
 void scanKeysTask(void * pvParameters) {
+  //scan key task
   //set the initiation interval to 50ms
   //changed to 20 ms
   const TickType_t xFrequency = 20/portTICK_PERIOD_MS;
@@ -129,21 +142,7 @@ void scanKeysTask(void * pvParameters) {
   uint8_t TX_Message[12][8] = {0};
 
   const uint32_t stepSizes [] = {51076056,54113197,57330935,60740010,64351799,68178356,72232452,76527617,81078186,85899346,91007187,96418756};
-  /*
-  uint32_t step_sizes[12];
-  uint32_t current_freq = 440 * pow( pow(2.0, 1.0/12.0), -9); //key C frequency
-  
-  for(int i = 0; i < 12; i++)
-  {
-    step_sizes[i]= pow(2, 32) * current_freq / 22000;
-    
-    current_freq *= pow(2.0, 1.0/12.0);
-    Serial.print(current_freq);
-    Serial.print(" ");
-    
-  }*/
-  //UBaseType_t uxHighWaterMark;
-  //uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
+
   // switches to make contents of the while loop run only once
   #ifdef TEST_SCANKEYS
   loopCondition = true;
@@ -209,9 +208,8 @@ void scanKeysTask(void * pvParameters) {
 
         xSemaphoreGive(keyArrayMutex);
 
-        //if (i == 3){
           //decoding knob 3
-          //xSemaphoreTake(keyArrayMutex, portMAX_DELAY);
+
           uint8_t currentState3 = (bitRead(keyPressed,1) << 1) | bitRead(keyPressed,0);
           uint8_t currentState2 = (bitRead(keyPressed,3) << 1) | bitRead(keyPressed,2);
           
@@ -225,8 +223,7 @@ void scanKeysTask(void * pvParameters) {
           //xSemaphoreGive(keyArrayMutex);
           __atomic_store_n(&knob3Rotation, knob3.readRotation(), __ATOMIC_RELAXED);
           __atomic_store_n(&knob2Rotation, knob2.readRotation(), __ATOMIC_RELAXED);
-        //}
-        //else if (i == 4){
+
           uint8_t currentState1 = (bitRead(keyPressed,5) << 1) | bitRead(keyPressed,4);
           uint8_t currentState0 = (bitRead(keyPressed,7) << 1) | bitRead(keyPressed,6);
 
@@ -241,8 +238,8 @@ void scanKeysTask(void * pvParameters) {
           //xSemaphoreGive(keyArrayMutex);
           __atomic_store_n(&knob1Rotation, knob1.readRotation(), __ATOMIC_RELAXED);
           __atomic_store_n(&knob0Rotation, knob0.readRotation(), __ATOMIC_RELAXED);
-        //}
-        //else if (i == 5){
+
+
           if (bitRead(keyPressed,8) == 0)
           {
             //press knob 2 to set status to sender
@@ -254,27 +251,13 @@ void scanKeysTask(void * pvParameters) {
             localIfSender = false;
           }
           __atomic_store_n(&ifSender, localIfSender, __ATOMIC_RELAXED);
-        //}
-    //}
-    //currentStepSize=localStepSize;
+
     //adjusting octave in the message transmitted and in the stepsize sent to global step size
     for(int i = 0; i<12; i++){
         TX_Message[i][1] = knob2.readRotation();
     }
     
-    /*
-    for (int i = 0; i < 12; i++){
-        if(localStepSize[i] != 0){
-          if (TX_Message[1] >= 4){
-            localStepSize[i] = localStepSize[i] << ((int32_t) TX_Message[1]-4);
-          }
-          else if(TX_Message[1] < 4){
-            localStepSize[i] = localStepSize[i] >> (4- (int32_t) TX_Message[1]);
-          }
-        }
-    }*/
-    //another implementation
-    
+    //adjusting stepsize based on octave
     if(TX_Message[1][1]>=4)
     {   
         for (int i = 0; i <12; i++){
@@ -291,13 +274,11 @@ void scanKeysTask(void * pvParameters) {
         }
     }
 
-    //__atomic_store_n(&currentStepSize, localStepSize, __ATOMIC_RELAXED);
-    //__atomic_store_n(&ifSender, localIfSender, __ATOMIC_RELAXED);
-
+    //recording previous key array for making comparison
     for(int i = 0; i<7; i++){
         previousKeyArray[i] = keyArray[i];
     }
-
+    //send messages to queue if the keyboard is set to sender
     if(ifSender){
         uint8_t local_TX_Message[8] = {0};
         for(int i = 0; i<12; i++){
@@ -308,15 +289,13 @@ void scanKeysTask(void * pvParameters) {
           if(local_TX_Message[0]=='R' || local_TX_Message[0]=='P')
           xQueueSend( msgOutQ, local_TX_Message, portMAX_DELAY);
           #endif
-          
         }
-        
         for (int i = 0; i <12; i++){
            localStepSize[i] = 0;
         }
     }
 
-
+    //storing local step size to global variable current step size
     xSemaphoreTake(stepSizeSemaphore, portMAX_DELAY);
     for (int i = 0; i <12; i++){
         currentStepSize[i] = localStepSize[i];

@@ -74,22 +74,25 @@
   extern uint8_t sampleBuffer1[SAMPLE_BUFFER_SIZE];
   extern volatile bool writeBuffer1;
 
+  //#define TEST_SCANKEYS 1
+  //#define TEST_DISPLAY  1
+  //#define TEST_DECODE  1
+  //#define TEST_TX  1
+  //#define TEST_SAMPLE  1
+  //#define TEST_DOUBLE_ISR 1
+  //#define TEST_CAN_RX_ISR 1
+  //#define TEST_CAN_TX_ISR 1
+  //#define DISABLE_SAMPLE_ISR 1
+  //#define DISABLE_THREADS 1
+  //#define DISABLE_CAN_ISR 1
+
 void sampleTask(void * pvParameters){
+  //audio sample generation task
 
-  /*
-  double table[1000] = {0};
-  for (int i = 1; i <= 1000; i++)
-  {
-    sine_table[i-1] = std::sin(PI * i/ 1000.0);
-  }*/
-
-
-  //static int32_t phaseAcc[12] = {0};
   uint32_t phaseAcc[12] = {0};
-  //uint32_t phaseAccf[12] = {0};
   int32_t VoutIndividual[12] = {0};
   int32_t Vout = 0;
-
+  //sine lookup table
   const uint32_t sinLUT[1024] = {
   128,128,129,130,131,131,132,133,
   134,135,135,136,137,138,138,139,

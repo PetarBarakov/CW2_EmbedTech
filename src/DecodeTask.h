@@ -66,8 +66,7 @@
   //received message
   extern uint8_t RX_Message[8];
 
-#define SAMPLE_BUFFER_SIZE 110
-  //256
+  #define SAMPLE_BUFFER_SIZE 110
 
   extern uint8_t sampleBuffer0[SAMPLE_BUFFER_SIZE];
   extern uint8_t sampleBuffer1[SAMPLE_BUFFER_SIZE];
@@ -76,32 +75,31 @@
   //Display driver object
     // extern U8G2_SSD1305_128X32_NONAME_F_HW_I2C u8g2;
 
+    //#define TEST_SCANKEYS 1
+    //#define TEST_DISPLAY  1
+    //#define TEST_DECODE  1
+    //#define TEST_TX  1
+    //#define TEST_SAMPLE  1
+    //#define TEST_DOUBLE_ISR 1
+    //#define TEST_CAN_RX_ISR 1
+    //#define TEST_CAN_TX_ISR 1
+    //#define DISABLE_SAMPLE_ISR 1
+    //#define DISABLE_THREADS 1
+    //#define DISABLE_CAN_ISR 1
+
 
 void decodeTask(void * pvParameters){
+  //decoding CAN message received
   const int32_t stepSizes [] = {51076056,54113197,57330935,60740010,64351799,68178356,72232452,76527617,81078186,85899346,91007187,96418756};
   uint8_t RX_Message_local[8]={0};
   uint8_t counter = 0;
-  //bool localIfSender = true;
+
   #ifdef TEST_DECODE
-  //uint8_t RX_Message_test[8]={0};
-  //uint32_t ID = 0x123;
-  //CAN_TX(ID, TX_Message);
-  //CAN_RX(ID, RX_Message_local);
-	//xQueueSendFromISR(msgInQ, RX_Message_test, NULL);
+
   loopCondition = true;
-  //uint8_t RX_Message_ISR[8] = {'P', 5, 3};
-  //RX_Message_ISR[8];
-  //uint32_t ID = 0x123;
-  
+
   while(loopCondition){
-  //uint32_t startTime = micros();
-  //uint32_t ID = 0x123;
-  //CAN_TX(ID, TX_Message);
-  //CAN_RX(ID, RX_Message_local);
-    //uint32_t ID = 0x120;
-	//xQueueSendFromISR(msgInQ, RX_Message_ISR, NULL);
-	//xQueueSendFromISR(msgInQ, RX_Message_ISR, NULL);
-	//xQueueSendFromISR(msgInQ, RX_Message_ISR, NULL);
+
   xQueueReceive(msgInQ, RX_Message_local, portMAX_DELAY);
   #endif
 
@@ -109,16 +107,7 @@ void decodeTask(void * pvParameters){
   while(1){
       xQueueReceive(msgInQ, RX_Message_local, portMAX_DELAY);
   #endif
-    //if(!ifSender){
-      //if(!ifSender){
-      //xQueueReceive(msgInQ, RX_Message_local, portMAX_DELAY);
-      //}
 
-      /*#ifdef TEST_DECODE
-        //uint8_t RX_Message_test[8]={0};
-      uint32_t ID = 0x123;
-      CAN_RX(ID, RX_Message_local);
-      #endif*/
       xSemaphoreTake(rxMessageMutex, portMAX_DELAY);
       for(int i = 0; i<8; i++){
         RX_Message[i] = RX_Message_local[i];
@@ -133,12 +122,10 @@ void decodeTask(void * pvParameters){
           xSemaphoreGive(stepSizeSemaphore);
       }
       else if(RX_Message_local[0]==0x50){
-          //P
-          //xSemaphoreTake(senderBoolMutex, portMAX_DELAY);
+     
           if(!ifSender){
             stepSize = stepSizes[(int) RX_Message_local[2]];
-          //stepSize = stepSize << ((int32_t) RX_Message[1] -4);
-          //xSemaphoreTake(keyArrayMutex, portMAX_DELAY);
+
           //adjusting octave sent
             if(RX_Message_local[1]>=4){
               stepSize = stepSize << ((int32_t) RX_Message_local[1]-4);
@@ -146,13 +133,12 @@ void decodeTask(void * pvParameters){
             else if(RX_Message_local[1]<4){
               stepSize = stepSize >> (4-(int32_t) RX_Message_local[1]);
             }
-          //xSemaphoreGive(keyArrayMutex);
-          //__atomic_store_n(&currentStepSize, stepSize, __ATOMIC_RELAXED);
+
             xSemaphoreTake(stepSizeSemaphore, portMAX_DELAY);
               currentStepSize[(int) RX_Message_local[2]] = stepSize;
             xSemaphoreGive(stepSizeSemaphore);
           }
-          //xSemaphoreGive(senderBoolMutex);
+
       }
       //Serial.printf("\n\r[2] Min available stack size %d * %d bytes\n\r", uxTaskGetStackHighWaterMark(NULL), sizeof(portBASE_TYPE));
     //}
@@ -161,7 +147,5 @@ void decodeTask(void * pvParameters){
       loopCondition = false;
       //Serial.println(micros()-startTime);
       #endif
-
-      //Serial.println(micros());
   }
 }

@@ -67,8 +67,7 @@
   //received message
   extern uint8_t RX_Message[8];
 
-#define SAMPLE_BUFFER_SIZE 110
-  //256
+  #define SAMPLE_BUFFER_SIZE 110
 
   extern uint8_t sampleBuffer0[SAMPLE_BUFFER_SIZE];
   extern uint8_t sampleBuffer1[SAMPLE_BUFFER_SIZE];
@@ -76,8 +75,20 @@
 
   //Display driver object
     extern U8G2_SSD1305_128X32_NONAME_F_HW_I2C u8g2;
+    //#define TEST_SCANKEYS 1
+  //#define TEST_DISPLAY  1
+  //#define TEST_DECODE  1
+  //#define TEST_TX  1
+  //#define TEST_SAMPLE  1
+  //#define TEST_DOUBLE_ISR 1
+  //#define TEST_CAN_RX_ISR 1
+  //#define TEST_CAN_TX_ISR 1
+  //#define DISABLE_SAMPLE_ISR 1
+  //#define DISABLE_THREADS 1
+  //#define DISABLE_CAN_ISR 1
 
 void displayUpdateTask(void * pvParameters) {
+  //updating display
   //set the initiation interval to 100ms
   const TickType_t xFrequency = 100/portTICK_PERIOD_MS;
   TickType_t xLastWakeTime = xTaskGetTickCount();

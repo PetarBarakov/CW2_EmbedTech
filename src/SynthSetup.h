@@ -61,20 +61,3 @@ void setOutMuxBit(const uint8_t bitIdx, const bool value) {
   delayMicroseconds(2);
   digitalWrite(REN_PIN,LOW);
 }
-
-
-// Step Sizes for a the initial A frequency
- // {
-//     51076057,   //step_C
-//     54113197,   //step_C#
-//     57330935,   //step_D
-//     60740010,   //step_D# ////
-//     64351799,   //step_E
-//     68178356,   //step_F
-//     72232452,   //step_F#
-//     76527617,   //step_G
-//     81078186,   //step_G#
-//     85899346,   //step_A
-//     91007187,   //step_A#
-//     96418756,   //step_B
-//   };
