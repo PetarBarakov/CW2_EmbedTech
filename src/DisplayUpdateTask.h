@@ -83,6 +83,7 @@ void displayUpdateTask(void * pvParameters) {
   TickType_t xLastWakeTime = xTaskGetTickCount();
   const String notes[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
   const String octaves[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8"};
+  const uint16_t Symbols[] = {0x25e2, 0x219d, 0x25fc, 0x25b2};
   //uint32_t ID=0x123;
   //uint8_t RX_Message[8]={0};
 
@@ -108,7 +109,7 @@ void displayUpdateTask(void * pvParameters) {
 	    //CAN_RX(ID, RX_Message);
     //Update display
       u8g2.clearBuffer();         // clear the internal memory
-      u8g2.setFont(u8g2_font_pxplusibmcgathin_8u); // choose a suitable font ncenB08
+      u8g2.setFont(u8g2_font_helvR08_tr); // choose a suitable font ncenB08
       //u8g2.drawStr(2,10,"Helllo World!");  // write something to the internal memory
     
     //uint8_t keys = readCols();
@@ -121,29 +122,39 @@ void displayUpdateTask(void * pvParameters) {
       }
       xSemaphoreGive(rxMessageMutex);
 
-      u8g2.setCursor(2,10);
+      
+      u8g2.print("Mode:");
     //print sender/receiver status
       //xSemaphoreTake(senderBoolMutex, portMAX_DELAY);
       if(ifSender==1){
-        u8g2.print((char) 'S');
+        u8g2.print("S");
       }
       else{
-        u8g2.print((char) 'R');
+        u8g2.print("R");
       }
       #ifdef TEST_DISPLAY
-        u8g2.print((char) 'S');
+        u8g2.print("S");
       #endif
       //xSemaphoreGive(senderBoolMutex);
 
-      u8g2.setCursor(2,20);
+      //u8g2.setCursor(85,10);
 
       //for (int i = 0; i<= 2; i ++) {
         //u8g2.print(keyArray[i],HEX); 
       //}
-
+      u8g2.print("  ");
+      u8g2.print("vol: ");
       u8g2.print(knob3Rotation,DEC); 
+      u8g2.print("  ");
+      u8g2.print("wave:");
+      u8g2.setFont(u8g2_font_unifont_t_symbols);
+      u8g2.drawGlyph(105, 10, Symbols[knob1Rotation]);
+      u8g2.setCursor(2,20);
+      u8g2.setFont(u8g2_font_helvR08_tr);
+      u8g2.print("octave:");
       u8g2.print(knob2Rotation,DEC);
-      u8g2.print(knob1Rotation,DEC);
+      
+     
 
       //const char *note;
       //note = notes;
