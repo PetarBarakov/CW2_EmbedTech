@@ -12,7 +12,7 @@ This section aims to briefly outline the implemented tasks of the music synthesi
 
 ### Scan Keys - Thread
 
-Key sanning is one of the most fundamental functions of the music synthesiser. By pressing each individual key, its information including the note, 
+Key sanning is one of the most fundamental functions of the music synthesiser. By pressing each individual key, its information including the note and octave stage will be transmitted to 
 
 ### Display Update - Thread
   Updates the display with the required information. Shows the user the volume level, octave, waveform choice, notes played, CAN messages, mode choice. Notes are shown in their order.
