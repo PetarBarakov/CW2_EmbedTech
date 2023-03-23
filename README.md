@@ -2,7 +2,7 @@
 
 
 
-# Embedded Systems Coursework 2
+[Headers] Embedded Systems Coursework 2
 ## Introduction
 
 The report presented here is to deliver a comprehensive analysis of the Music Synthesiser, which is implemented for Embedded System Coursework 2 by EmbedTech.
