@@ -88,8 +88,7 @@ volatile bool writeBuffer1 = false;
 
 
 volatile uint8_t keyboard_ID;
-
-
+volatile uint8_t position;
 
 //testing execution time
 

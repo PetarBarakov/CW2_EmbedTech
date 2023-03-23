@@ -77,6 +77,8 @@
   //Display driver object
     extern U8G2_SSD1305_128X32_NONAME_F_HW_I2C u8g2;
 
+  extern volatile uint8_t position;
+
 void displayUpdateTask(void * pvParameters) {
   //set the initiation interval to 100ms
   const TickType_t xFrequency = 100/portTICK_PERIOD_MS;
@@ -177,6 +179,11 @@ void displayUpdateTask(void * pvParameters) {
         u8g2.print(notes[RX_MessageLocal[2]]);
         u8g2.print(RX_MessageLocal[1]);
       }
+      
+      u8g2.setCursor(10, 300);
+      u8g2.print(position);
+      // Serial.println(position);
+
 
       u8g2.sendBuffer();          // transfer internal memory to the display
 

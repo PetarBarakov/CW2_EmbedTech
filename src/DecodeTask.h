@@ -159,7 +159,7 @@ void decodeTask(void * pvParameters){
       //Serial.printf("\n\r[2] Min available stack size %d * %d bytes\n\r", uxTaskGetStackHighWaterMark(NULL), sizeof(portBASE_TYPE));
     //}
 
-      __atomic_store_n(&position, RX_Nessage_local[7], __ATOMIC_RELAXED);
+      __atomic_store_n(&position, RX_Message_local[7], __ATOMIC_RELAXED);
 
       #ifdef TEST_DECODE
       loopCondition = false;

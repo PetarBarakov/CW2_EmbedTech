@@ -73,8 +73,8 @@ extern uint8_t RX_Message[8];
 
 
 
-extern volatile uint8_t possition;
-volatile uint8_t octave;
+extern volatile uint8_t position;
+// volatile uint8_t octave;
 
 
 uint8_t readCols(){
@@ -174,7 +174,10 @@ void scanKeysTask(void * pvParameters) {
     //read the octave
     uint32_t octave_reading = knob2.readRotation();
 
-    
+    uint8_t local_position;
+    assign_possition(west_detect, east_detect, local_position);
+
+    __atomic_store_n(&position, local_position, __ATOMIC_RELAXED);
 
 
     bool flag = false;
