@@ -54,7 +54,9 @@ Total CPU utilization = 36.2%
 
 The dependencies of the music synthesiser system is shown as above. The diagram is aimed to use different shapes for identifying different tasks, so to clearly present the relationships. In the diagram, the ellipses represent the threads, while the rectangles and the rounded rectangles are the interrupts and queues respectively.
 
-'Display Update', which holds the highest priority, depends only on the display hardware of the keyboard. While the 'CAN Receive and Decode' relies on 'msgInQ', which is the queue to store incoming message. The latter one therefore is associated with the receiving end, which is mainly controlled by the hardware part.
+The dependency diagram only includes the components that need access to each other, and might cause blocking in different ways. Therefore, according to the diagram, 'msgInQ' and 'msgOutQ', which are the incoming and outcoming messages of the queues, are tightly associated with a number of components. It can be shown that the display, key scanning and audio generation functions directly depend on the hardware part, which is the keyboard. While all the interrupts are associated with the CAN hardware.
+
+The main point of this diagram is to demonstrate that there is no closed loop forming within the system, so that the risk of including deadlocks in the operation could be avoided. Thus, it is proved by this diagram that the music synthesiser system is very unlikely to be involved in any deadlock, which could cause blocking and conflicts in executing multiple tasks.
 
 ## Advanced Features
 
