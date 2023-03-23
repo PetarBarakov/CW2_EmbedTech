@@ -10,12 +10,18 @@ In this report, we are also going to discuss the timing, architecture, and depen
 ## Task Identification
 This section aims to briefly outline the implemented tasks of the music synthesiser.
 
-### Display update
+### Scan Keys - Thread
+
+### Display Update - Thread
   Updates the display with the required information. Shows the user the volume level, octave, waveform choice, notes played, CAN messages, mode choice. Notes are shown in their order.
-### Scan Keys
-### CAN transmit
-### CAN receive / Decode task
-### Sample task
+
+### CAN Message Receiving / Decoding task - Thread
+
+### CAN Message Transmission - Thread
+
+### Audio Sample Generation - Thread
+
+
   This task changes the output buffer ready for the interrupt to send it out.
 ### CAN transmission interrupt
 ### CAN receive interrupt
@@ -36,5 +42,6 @@ Total Latency = 36.2 ms
 Total CPU utilization = 36.2%
 
 ## Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronisation
+
 
 ## Inter-Task Blocking Dependencies
