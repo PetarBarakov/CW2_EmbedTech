@@ -20,7 +20,6 @@ This section aims to briefly outline the implemented tasks of the music synthesi
 
 ## Scan Keys Thread
 
-
 Key scanning is one of the most fundamental functions of the music synthesiser. By pressing each individual key or turning a knob, the corresponding row and column location of key matrix is set low, which enables the exact note to be detected. The readings from the key matrix are then stored in an array. The information are then decoded to the notes being pressed and octave stages being set, which are then put as a two dimensional array to output message queue to be sent by CAN message transmission task. In this task, the knob rotations are also decoded to provide different functions. In particular, knob 3 and knob 2 are used respectively for varying the volume and octave stages. Pressing knob 3 and 2 are used to set the keyboard to receiver and sender mode respectively. While rotation of knob 1 is transferred to a global variable, which is used in the audio sample generation task to select waveforms.
 
 
@@ -42,15 +41,15 @@ This task changes data inside the output buffer, which is then read and output t
   
 ## CAN Transmission Interrupt
 
-This interrupts works with ISR by giving a semaphore whenever messages are avaiable and able to be transmitted.
+This interrupts works with CAN transmission thread by giving a semaphore whenever messages are already sent, allowing the CAN Message transmission thread to execute again.
 
 ## CAN Receive Interrupt
 
-Used to receive CAN messages, ensuring all messages from the CAN bus are received properly. Messages received by this interrupt are processed in a different thread, alowing for the interrupt to be made very short as it receives all messages without needing to process any of them.
+This interrupt is used to receive CAN messages and store them in the incoming message queue, ensuring all messages from the CAN bus are received properly. Messages received by this interrupt are processed in a different thread, alowing for the interrupt to be made very short as it receives all messages without needing to process any of them.
 
 ## Sample Interrupt
   
-This is a double buffer interrupt that is used to output sounds from the keyboards. It is called using a clock at a frequency of 22kHz. Double bufferinga allows for more complex funtions to be used in the sample generation thread, while the interrupt simply outputs the voltage levels to the buffer.
+This is the sample interrupt that is used to output sounds from the keyboards by outputing volage values stored in the double buffer, which are loaded by the audio sample generation task. It is called using a clock at a frequency of 22kHz. Double bufferinga allows for more complex funtions to be used in the sample generation thread, while the interrupt simply outputs the voltage levels to the buffer.
 
 
 # Task Timing Charaterisation, Critical Instant Analysis and Quantification of CPU Utilization
