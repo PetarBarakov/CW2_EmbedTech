@@ -1,8 +1,12 @@
-####Table of Content
+# Table of Contents
 
+1. [Introduction](#introduction)
+2. [Task Identification](#Task Identification)
+3. [Task timing Charachterisation](#Task Timing Charachterization, Critical Instant Analysis and Quantification of CPU Utilization)
+4. [Data structures](#Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronization)
+5. [Dependencies](#Inter-Task Blocking Dependencies)
+6. [Advanced Features](#Advanced Features)
 
-
-[Headers] Embedded Systems Coursework 2
 ## Introduction
 
 The report presented here is to deliver a comprehensive analysis of the Music Synthesiser, which is implemented for Embedded System Coursework 2 by EmbedTech.
