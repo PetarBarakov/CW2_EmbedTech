@@ -52,5 +52,9 @@ Total CPU utilization = 36.2%
 ## Inter-Task Blocking Dependencies
 ![Screenshot](Dependencies.svg)
 
+The dependencies of the music synthesiser system is shown as above. The diagram is aimed to use different shapes for identifying different tasks, so to clearly present the relationships. In the diagram, the ellipses represent the threads, while the rectangles and the rounded rectangles are the interrupts and queues respectively.
+
+<mark>Display Update</mark>
+
 ## Advanced Features
 
