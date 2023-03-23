@@ -22,65 +22,53 @@ void GenerateHandshake(bool outBits[])
 
 }
 
-uint32_t* PositionTX(uint8_t current_position, uint8_t keyTXmsg[])
-{
-    uint8_t AutoDetectionTX[8];
+// uint32_t* PositionTX(uint8_t current_position, uint8_t keyTXmsg[])
+// {
+//     uint8_t AutoDetectionTX[8];
 
-    AutoDetectionTX[0] = keyTXmsg[0];
-    AutoDetectionTX[1] = keyTXmsg[1];
-    AutoDetectionTX[2] = keyTXmsg[2];
-    AutoDetectionTX[3] = 0;
-    AutoDetectionTX[4] = 0;
-    AutoDetectionTX[5] = 0;
-    AutoDetectionTX[6] = GenerateHashID();
-    AutoDetectionTX[7] = current_position + 1;
+//     AutoDetectionTX[0] = keyTXmsg[0];
+//     AutoDetectionTX[1] = keyTXmsg[1];
+//     AutoDetectionTX[2] = keyTXmsg[2];
+//     AutoDetectionTX[3] = 0;
+//     AutoDetectionTX[4] = 0;
+//     AutoDetectionTX[5] = 0;
+//     AutoDetectionTX[6] = GenerateHashID();
+//     AutoDetectionTX[7] = current_position + 1;
 
 
-    return AutoDetectionTX;
+//     return AutoDetectionTX;
     
-}
+// }
 
-uint8_t PositionRX()
-{
-    uint32_t msgReceived [8];
-    xQueueReceive(msgInQ, msgReceived, portMAX_DELAY);
+// uint8_t PositionRX()
+// {
+//     uint32_t msgReceived [8];
+//     xQueueReceive(msgInQ, msgReceived, portMAX_DELAY);
 
-    return msgReceived[7];
+//     return msgReceived[7];
     
-}
+// }
 
 
 
-void assign_possition (bool west_detect, bool east_detect, uint8_t current_position, uint8_t TXposition, )
+void assign_possition (bool west_detect, bool east_detect, uint8_t position)
 {
 
     //positions are assigned east to west
     //the detect singnals are active low
     if(west_detect == 1)
     {
-        if(east_detect == 0)
-        {   
-            //receive position from east
-        }
-        else
-        {
-                       
-        }
+        position = 0;
     }
-    else // there is a western keyboard
+
+    if(west_detect == 0 && east_detect == 1)
     {
-        if(east_detect == 1)
-        {
-            //this is the most eastern keyboard
-            PositionTX(0);
-            return 0;
-        }
-        else
-        {
-            uint8_t current_position = PositionRX();
-            PositionTX(current_position);
-            return current_position;
-        }
+        position = 2;
+    }
+    
+    if(west_detect == 0 && east_detect == 0)
+    {
+        position = 1;
     }
 }
 
