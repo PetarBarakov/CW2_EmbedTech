@@ -103,3 +103,7 @@ The music synthesizer supports polyphony, in which up to 12 keys can be played t
 
 ## User-friendly Display Interface
 The interface has been designed in a way to effectively show information about keyboard settings and notes being played, through deliberate choice of fonts and symbols for different waveforms, as well as clear indication of the types of settings being displayed.
+
+## Keyboard Autodetection (not completed)
+
+In the current design, whenever keyboards are chained together, all of their variables (such as waveform, octave and volume) need to be set seperately set. This can be avoided if the keyboards are better aware of each other existance and are able to comunicate their position and input variables. This was attempted by modifying the format of messages to include the additional information. However, bugs were encountered that prevented the full implementation of this subtask.
