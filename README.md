@@ -26,7 +26,7 @@ Key sanning is one of the most fundamental functions of the music synthesiser. B
 ### CAN Transmission Interrupt
 ### CAN Receive Interrupt
 ### Sample Interrupt
-Double buffer.
+  This is a double buffer interrupt that is used to output sounds from the keyboards. It is called using a clock at a frequency of 22kHz. Double bufferinga allows for more complex funtions to be used in the sample generation thread, while the interrupt simply outputs the voltage levels to the buffer.
 
 
 ## Task Timing Charaterisation, Critical Instant Analysis and Quantification of CPU Utilization
