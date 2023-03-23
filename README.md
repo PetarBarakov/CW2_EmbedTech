@@ -60,3 +60,6 @@ The main point of this diagram is to demonstrate that there is no closed loop fo
 
 ## Advanced Features
 
+Our advanced music synthesiser is designed and implemented to introduce more features that cannot be performed by regular systems, and the features are explained as following.
+
+*Multiple types of waveforms.
