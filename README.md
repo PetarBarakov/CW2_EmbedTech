@@ -49,7 +49,7 @@ This interrupt is used to receive CAN messages and store them in the incoming me
 
 ## Sample Interrupt
   
-This is the sample interrupt that is used to output sounds from the keyboards by outputing volage values stored in the double buffer, which are loaded by the audio sample generation task. It is called using a clock at a frequency of 22kHz. Double bufferinga allows for more complex funtions to be used in the sample generation thread, while the interrupt simply outputs the voltage levels to the buffer.
+This is the sample interrupt that is used to output sounds from the keyboards by outputing volage values stored in the double buffer, which are loaded by the audio sample generation task. It is called using a clock at a frequency of 22kHz. Double buffering allows for more complex funtions to be used in the sample generation thread to generate audio samples and thus more complex waveforms, while the interrupt simply outputs the voltage levels to the analogue output pin.
 
 
 # Task Timing Charaterisation, Critical Instant Analysis and Quantification of CPU Utilization
@@ -65,7 +65,7 @@ This is the sample interrupt that is used to output sounds from the keyboards by
 | Sample Interrupt                | 0.04545  | 9.625  | interrupt| 2201    | 21,184.625  | 21.18|
 
 
-
+The theoretical minimum initiaion intervals (deadlines) and measured maximum execution times for all the tasks of the system are recorded in the table above. The iniation interval of scan keys thread and display update thread is set based on the coursework requirement. The initiation interval of decode thread and CAN transmit thread is calculated based on the worst-case scenario that the scan key task is sending 12 messages per 20 ms, the CAN message transmission time is 0.7 ms, the message queues both have a length of 36. The audio sample generation thread is chosen to fill two buffers of size 110, which is set based on limiting the upper bound of latency of generating sound to 10 ms, so that the latency will not be perceptible by humans.
 Total Latency = 67.62 ms
 Total CPU utilization = 67.58%
 
