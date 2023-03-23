@@ -1,11 +1,11 @@
 # Table of Contents
 
 1. [Introduction](#introduction)
-2. [Task Identification](#taskidentification)
-3. [Task timing Charachterisation](#tasktimingcharachterizationcriticalinstantanalysisandquantificationoncpuutilization)
-4. [Data structures](#shareddatastructuresmethodsusedtoguaranteesafeaccessandsynchronization)
-5. [Dependencies](#intertaskblockingdependencies)
-6. [Advanced Features](#advancedfeatures)
+2. [Task Identification](#task-identification)
+3. [Task timing Charachterisation](#task-timing-charachterization-critical-instant-analysis-and-quantification-of-cpu-utilization)
+4. [Data structures](#shared-data-structures-methods-used-to-guarantee-safe-access-and-synchronization)
+5. [Dependencies](#inter-task-blocking-dependencies)
+6. [Advanced Features](#advanced-features)
 
 ## Introduction
 
