@@ -46,19 +46,19 @@ This is a double buffer interrupt that is used to output sounds from the keyboar
 ## Task Timing Charaterisation, Critical Instant Analysis and Quantification of CPU Utilization
 | Task   | Initiation Interval (ms) |Execution time (μs)| RMS priority | $(\frac{t_n}{t_i})$ | $(\frac{t_n}{t_i})*T_i$ (μs)| $(\frac{T_i}{t_i})$ (%)|
 | ----------------| -------------------------|-------------------|--------------|-------|-------------------------------------------------| ----|
-| Scan Keys thread                | 20   | 164.8125   | 4         | 5     | 824.06       | 0.824 | 
-| Display Update thread           | 100 | 17424.03125 | 1         | 1     | 17,424.03    | 17.42|
-| Decode thread                   | 25.2  | 61        | 3         | 4     | 244           | 0.242 |
-| CAN Transmit thread             | 60  | 55          | 2        | 2     | 110           |0.092|
-| Audio Sample Generation thread  | 5  | 581.875     | 5         | 20    | 11,637.5      | 11.6375|
+| Scan Keys thread                | 20   | 163.9   | 4         | 5     | 819.53       | 0.8195 | 
+| Display Update thread           | 100 | 18,879.3 | 1         | 1     | 18,879.3   | 18.88|
+| Decode thread                   | 25.2  | 60        | 3         | 4     | 240           | 0.24 |
+| CAN Transmit thread             | 60  | 56          | 2        | 2     | 112           |0.093|
+| Audio Sample Generation thread  | 5  | 975.91     | 5         | 20    | 19,518.1      | 19.52|
 | CAN TX Interrupt                | 0.7  | 24       | interrupt  | 143    | 3,432        | 3.43|
 | CAN RX Interrupt                | 0.7  | 24       | interrupt  | 143    | 3,432        | 3.43|
 | Sample Interrupt                | 0.04545  | 9.625  | interrupt| 2201    | 21,184.625  | 21.18|
 
 
 
-Total Latency = 58.29 ms
-Total CPU utilization = 58.25%
+Total Latency = 67.62 ms
+Total CPU utilization = 67.58%
 
 ## Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronisation
   There are 5 global variables being shared between threads and interrupts
