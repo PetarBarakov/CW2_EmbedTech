@@ -328,6 +328,8 @@ void scanKeysTask(void * pvParameters) {
     loopCondition = false;
     #endif
 
+    //Serial.printf("\n\r[2] Min available stack size %d * %d bytes\n\r", uxTaskGetStackHighWaterMark(NULL), sizeof(portBASE_TYPE));
+
     
   }
 }

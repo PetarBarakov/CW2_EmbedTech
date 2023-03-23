@@ -273,7 +273,7 @@ void setup() {
   xTaskCreate(
   displayUpdateTask,		/* Function that implements the task */
   "displayUpdate",		/* Text name for the task */
-  309,      		/* Stack size in words, not bytes */
+  362,      		/* Stack size in words, not bytes */
   //64 byte stack not large enough
   NULL,			/* Parameter passed into the task */
   1,			/* Task priority */
@@ -285,7 +285,7 @@ void setup() {
   xTaskCreate(
   decodeTask,		/* Function that implements the task */
   "decode",		/* Text name for the task */
-  283,      		/* Stack size in words, not bytes */
+  1024,      		/* Stack size in words, not bytes */
   //64 byte stack not large enough
   NULL,			/* Parameter passed into the task */
   3,			/* Task priority */
@@ -316,7 +316,7 @@ void setup() {
   xTaskCreate(
   sampleTask,		/* Function that implements the task */
   "sample",		/* Text name for the task */
-  2048,      		/* Stack size in words, not bytes */
+  321,      		/* Stack size in words, not bytes */
   //64 byte stack not large enough
   NULL,			/* Parameter passed into the task */
   5,			/* Task priority */
@@ -362,7 +362,7 @@ void setup() {
 
   //initialize CAN
   #ifdef TEST_SCANKEYS
-  CAN_Init(true);
+  //CAN_Init(true);
   #endif
   #ifndef TEST_SCANKEYS
   //CAN_Init(false);
