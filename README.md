@@ -65,7 +65,7 @@ This is the sample interrupt that is used to output sounds from the keyboards by
 | CAN RX Interrupt                | 0.7  | 24       | interrupt  | 143    | 3,432        | 3.43|
 | Sample Interrupt                | 0.04545  | 9.625  | interrupt| 2201    | 21,184.625  | 21.18|
 
-Total Latency = 67.62 ms
+Total Latency = 67.62 ms; 
 Total CPU utilization = 67.58%
 
 The theoretical minimum initiaion intervals (deadlines) and measured maximum execution times for all the tasks of the system are recorded in the table above. The iniation interval of scan keys thread and display update thread is set based on the coursework requirement. The initiation interval of decode thread and CAN transmit thread is calculated based on the worst-case scenario that the scan key task is sending 12 messages per 20 ms, the CAN message transmission time is 0.7 ms, the message queues both have a length of 36. The audio sample generation thread is chosen to fill two buffers of size 110, which is set based on limiting the upper bound of latency of generating sound to 10 ms, so that the latency will not be perceptible by humans. The initiation intervals of CAN TX and RX interrupts are set to the transmission time of one CAN message. The initiation interval of sample interrupt is set to 22kHz timer period.
@@ -78,19 +78,23 @@ The total CPU utilization is calculated to be 67.58%, which is less than 90% and
 
 # Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronisation
 In the system, it is ensured through the usage of mutex and atomic access, that all shared data have safe access and synchronisation.
+
 There are 5 global arrays being shared between different threads and interrupts.
-  * **currentStepSize** is an unsigned 32 bit integer array of size 12, storing the step size value corresponding to each of the 12 keys, which will then be used as counting step size for the phase accumulator. It is written in the Scan Key Task and Decode Task, and read in the Sample Task. This is protected by its own mutex.
-  * **keyArray** is an unsigned 8 bit integer array of size 7, storing the readings from the key matrix, which contain the information about whether the keys and knobs have been pressed or rotated. It is written in the Scan Key Task and read in the Display Update Task. This is protected by its own mutex.
-  * **RX_Message** is an unsigned 8 bit integer array of size 8, storing the CAN message received. It is written in the Decode Task and read in the Display Update Task. This is protected by its own mutex.
-  * **SampleBuffer0** and **SampleBuffer1** are two unsigned 8 bit integer arrays of size 110, storing the values of voltage that should be sent to the analogue output pin to generate audio. They are written in the Sample Task and read in the sample interrupt. A double buffer is implemented by swapping the array being read and written after all elements have been read or written. These are protected by their own mutex.
+  * **currentStepSize** is an unsigned 32 bit integer array of size 12, storing the step size value corresponding to each of the 12 keys, which will then be used as counting step size for the phase accumulator. It is written in the Scan Key Task and Decode Task, and read in the Sample Task. This is protected by a mutex.
+  * **keyArray** is an unsigned 8 bit integer array of size 7, storing the readings from the key matrix, which contain the information about whether the keys and knobs have been pressed or rotated. It is written in the Scan Key Task and read in the Display Update Task. This is protected by a mutex.
+  * **RX_Message** is an unsigned 8 bit integer array of size 8, storing the CAN message received. It is written in the Decode Task and read in the Display Update Task. This is protected by a mutex.
+  * **SampleBuffer0** and **SampleBuffer1** are two unsigned 8 bit integer arrays of size 110, storing the values of voltage that should be sent to the analogue output pin to generate audio. They are written in the Sample Task and read in the sample interrupt. A double buffer is implemented by swapping the array being read and written after all elements have been read or written. These are protected by a single mutex.
+
+There are 6 global variables being shared between different threads and interrupts. All of them are equal to or less than 32 bit, thus they are fully protected by atomic access.
   * **Knob0Rotation**, **Knob1Rotation**, **Knob2Rotation**, **Knob3Rotation** are 32 bit integer, containing values corresponding to the amount of rotation of each knob. They are all written in the Scan Key Task. Knob3 is set to control the volume with eight increments. Knob2 is set to change the octave between 0th and 8th octave. Since they are only read in the ScanKeysTask they dont need to be global variables, but they have been defined as such to show uniformity with Knob1Rotation, which does need to be a global variable since it changes the waveform, and therefore is read in the scan keys and sample tasks. The global variable implementation of all KnobRotation variables also allows for potential access from other threads or interrupts if more functions are implemented. 
   * **ifSender** is a boolean, which contain information about whether the current keyboard has been set to sender or receiver mode. It is written in the Scan Key Task and read in the Scan Key Task.
+  * **writeBuffer1** is a Boolean, which contains information regarding which of the sample buffers should be written to and read by Sample Task and Sample Interrupt.
 
-  In total there are 5 mutexes to protect the different variables. The last mutex (not previously mentioned) is used to protect the sending of CAN messages.
+  In total there are 5 mutexes to protect the different shared arrays. The last mutex (not previously mentioned) is used to protect the transmission of CAN messages, it is being taken in the CAN transmission task and given in the CAN RX interrupt.
 
   Atomic accessing of variables are also used throughout the code for synchronization purposes.
   
-  It should be noted that the the evey message is saved in a queue before it is transmitted and after it is received. These queues are called **msgInQ** and **msgOutQ** are used as they allow for the faster completion of the interupts and ensure that no data is lost between transmission and when it is decoded.  
+  It should be noted that the the every message is saved in a queue before it is transmitted and after it is received. These queues are called **msgInQ** and **msgOutQ** are used as they allow for the faster completion of the interupts and ensure that no data is lost between transmission and when it is decoded, they also prolong the initiation intervals of CAN receive and transmit tasks. 
 
 # Inter-Task Blocking Dependencies
 ![Screenshot](Dependencies.svg)
