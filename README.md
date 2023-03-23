@@ -20,7 +20,7 @@ Through the OLED display screen of the keyboard, this task is updating all the u
 
 ### CAN Message Receiving / Decoding task - Thread
 
-This function is aimed to provide communications of CAN buses mainly for receiving messages. The message is sent through the CAN hardware, and is then temporarily stored in the receiving end interrupt. The data is kept in the incoming message queue later on, which is mainly responsible for storing and sending the messages for further decoding process.
+This thread is aimed to provide communications of CAN buses mainly for receiving messages. The message is sent through the CAN hardware, and is then temporarily stored in the receiving end interrupt. The data is kept in the incoming message queue later on, which is mainly responsible for storing and sending the messages for further decoding process.
 
 ### CAN Message Transmission - Thread
 
@@ -46,19 +46,19 @@ This is a double buffer interrupt that is used to output sounds from the keyboar
 ## Task Timing Charaterisation, Critical Instant Analysis and Quantification of CPU Utilization
 | Task   | Initiation Interval (ms) |Execution time (μs)| RMS priority | $(\frac{t_n}{t_i})$ | $(\frac{t_n}{t_i})*T_i$ (μs)| $(\frac{T_i}{t_i})$ (%)|
 | ----------------| -------------------------|-------------------|--------------|-------|-------------------------------------------------| ----|
-| Scan Keys  | 20   | 164.8125          | 4  | 5     | 824.06   | 0.824 | 
-| Display Update    | 100 | 17424.03125       | 1    | 1     | 17,424.03| 17.42|
-| CAN Receive and Decode    | 25.2  | 1205.90625        | 3       | 3.97  | 4,785.34  | 4.79 |
-| CAN Transmit    | 60  | 905.8125          | 2     | 1.67  | 1,509.69   | 1.51|
-| Audio Sample Generation     | 5  | 583               | 5   | 20    | 11,660  | 11.66|
-| CAN TX Interrupt     | 5  | 583               | 5   | 20    | 11,660  | 11.66|
-| CAN RX Interrupt     | 5  | 583               | 5   | 20    | 11,660  | 11.66|
-| Sample Interrupt     | 5  | 583               | 5   | 20    | 11,660  | 11.66|
+| Scan Keys thread                | 20   | 164.8125   | 4         | 5     | 824.06       | 0.824 | 
+| Display Update thread           | 100 | 17424.03125 | 1         | 1     | 17,424.03    | 17.42|
+| Decode thread                   | 25.2  | 61        | 3         | 4     | 244           | 0.242 |
+| CAN Transmit thread             | 60  | 55          | 2        | 2     | 110           |0.092|
+| Audio Sample Generation thread  | 5  | 581.875     | 5         | 20    | 11,637.5      | 11.6375|
+| CAN TX Interrupt                | 0.7  | 24       | interrupt  | 143    | 3,432        | 3.43|
+| CAN RX Interrupt                | 0.7  | 24       | interrupt  | 143    | 3,432        | 3.43|
+| Sample Interrupt                | 0.04545  | 9.625  | interrupt| 2201    | 21,184.625  | 21.18|
 
 
 
-Total Latency = 36.2 ms
-Total CPU utilization = 36.2%
+Total Latency = 58.29 ms
+Total CPU utilization = 58.25%
 
 ## Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronisation
   There are 5 global variables being shared between threads and interrupts
