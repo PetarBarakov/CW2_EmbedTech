@@ -49,7 +49,20 @@ Total Latency = 36.2 ms
 Total CPU utilization = 36.2%
 
 ## Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronisation
+  There are 5 global variables being shared between threads and interrupts
+  * **currentStepSize** is an unsigned 32 bit integer array of size 12, storing the step size value corresponding to each of the 12 keys, which will then be used as counting step size for the phase accumulator. It is written in the Scan Key Task and Decode Task, and read in the Sample Task.  
+  * **keyArray** is an unsigned 8 bit integer array of size 7, storing the readings from the key matrix, which contain the information about whether the keys and knobs have been pressed or rotated. It is written in the Scan Key Task and read in the Display Update Task.
+  * **RX_Message** is an unsigned 8 bit integer array of size 8, storing the CAN message received. It is written in the Decode Task and read in the Display Update Task.
+  * **SampleBuffer0** and **SampleBuffer1** are two unsigned 8 bit integer arrays of size 110, storing the values of voltage that should be sent to the analogue output pin to generate audio. They are written in the Sample Task and read in the sample interrupt. A double buffer is implemented by swapping the array being read and written after all elements have been read or written.
+  * **Knob0Rotation**, **Knob1Rotation**, **Knob2Rotation**, **Knob3Rotation** are 32 bit integer, containing values corresponding to the amount of rotation of each knob. They are all written in the Scan Key Task. Knob3 is set to control the volume with eight increments. Knob2 is set to change the octave between 0th and 8th octave. Since they are only read in the ScanKeysTask they dont need to be global variables, but they have been defined as such to show uniformity with Knob1Rotation, which does need to be a global variable since it changes the waveform, and therefore is read in the scan keys and sample tasks. The global variable implementation of all KnobRotation variables also allows for potential access from other threads or interrupts if more functions are implemented. 
+  * **ifSender** is a boolean, which contain information about whether the current keyboard has been set to sender or receiver mode. It is written in the Scan Key Task and read in the Scan Key Task.
 
+
+  There are a total of 5 mutexes to protect the variables being shared. These are 
+
+  Atomic accessing of variables is also used throughout the code for synchronization purposes.
+
+ 
 
 ## Inter-Task Blocking Dependencies
 ![Screenshot](Dependencies.svg)
