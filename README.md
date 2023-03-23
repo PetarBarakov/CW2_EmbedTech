@@ -1,7 +1,7 @@
 # Table of Contents
 
 1. [Introduction](#introduction)
-2. [Task Identification](#Task Identification)
+2. [Task Identification](#TaskIdentification)
 3. [Task timing Charachterisation](#Task Timing Charachterization, Critical Instant Analysis and Quantification of CPU Utilization)
 4. [Data structures](#Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronization)
 5. [Dependencies](#Inter-Task Blocking Dependencies)
