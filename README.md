@@ -65,10 +65,9 @@ The main point of this diagram is to demonstrate that there is no closed loop fo
 Our advanced music synthesiser is designed and implemented to introduce more features that cannot be performed by regular systems, and the features are explained as following.
 
 ### Multiple Waveforms
-The music synthesizer can output audio in the form of sinusoidal, square and triangular waveform, in addition to the standard sawtooth wave. The waveform generated can be changed through turning the second leftmost knob. The current waveform chosen will be shown on the OLED display, in which 0 indicates sawtooth wave, 1 indicates sinusoidal wave, 2 indicates square wave and 3 indicates triangular wave.
-
+The music synthesizer can output audio in the form of sinusoidal, square and triangular waveform, in addition to the standard sawtooth wave. The waveform generated can be changed through turning the second leftmost knob. The current waveform chosen will be shown on the OLED display, indicated by symbols on the display. The square wave produces a brighter more 'pixelised' sound, while the sine wave will give a clearer sound. All other features work well with all different waveforms.
 ### Polyphony
-The music synthesizer supports polyphony, in which up to 12 keys can be played together at once. The output sound is clipped at the maximum output value.
+The music synthesizer supports polyphony, in which up to 12 keys can be played together at once. This also includes polyphony over different octaves, using multiple keyboards with CAN messages. The output sound is clipped at the maximum output value.
 
 ### User-friendly Display Interface
 The interface has been designed in a way to effectively show information about keyboard settings and notes being played, through deliberate choice of fonts and symbols for different waveforms, as well as clear indication of the types of settings being displayed.
