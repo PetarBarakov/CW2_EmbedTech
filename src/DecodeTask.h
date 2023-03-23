@@ -69,12 +69,14 @@
 #define SAMPLE_BUFFER_SIZE 110
   //256
 
-  extern uint8_t sampleBuffer0[SAMPLE_BUFFER_SIZE];
-  extern uint8_t sampleBuffer1[SAMPLE_BUFFER_SIZE];
-  extern volatile bool writeBuffer1;
+extern uint8_t sampleBuffer0[SAMPLE_BUFFER_SIZE];
+extern uint8_t sampleBuffer1[SAMPLE_BUFFER_SIZE];
+extern volatile bool writeBuffer1;
 
-  //Display driver object
-    // extern U8G2_SSD1305_128X32_NONAME_F_HW_I2C u8g2;
+
+
+
+extern volatile uint8_t possition;
 
 
 void decodeTask(void * pvParameters){
@@ -156,6 +158,8 @@ void decodeTask(void * pvParameters){
       }
       //Serial.printf("\n\r[2] Min available stack size %d * %d bytes\n\r", uxTaskGetStackHighWaterMark(NULL), sizeof(portBASE_TYPE));
     //}
+
+      __atomic_store_n(&position, RX_Nessage_local[7], __ATOMIC_RELAXED);
 
       #ifdef TEST_DECODE
       loopCondition = false;

@@ -3,76 +3,79 @@
 
 
 #include <KnobControl.h>
+#include <AutoDetection.h>
 
 
 //Constants
-  extern const uint32_t interval; //Display update interval
+extern const uint32_t interval; //Display update interval
 
 //Global Variables
-  extern volatile uint32_t currentStepSize[12];
-  extern volatile uint8_t keyArray[7];
+extern volatile uint32_t currentStepSize[12];
+extern volatile uint8_t keyArray[7];
 
 //Timing
-  extern volatile bool loopCondition;
+extern volatile bool loopCondition;
 
 //Pin definitions
-  //Row select and enable
-  extern const int RA0_PIN;
-  extern const int RA1_PIN;
-  extern const int RA2_PIN;
-  extern const int REN_PIN;
+//Row select and enable
+extern const int RA0_PIN;
+extern const int RA1_PIN;
+extern const int RA2_PIN;
+extern const int REN_PIN;
 
-  //Matrix input and output
-  extern const int C0_PIN;
-  extern const int C1_PIN;
-  extern const int C2_PIN;
-  extern const int C3_PIN;
-  extern const int OUT_PIN;
+//Matrix input and output
+extern const int C0_PIN;
+extern const int C1_PIN;
+extern const int C2_PIN;
+extern const int C3_PIN;
+extern const int OUT_PIN;
 
-  //Audio analogue out
-  extern const int OUTL_PIN;
-  extern const int OUTR_PIN;
+//Audio analogue out
+extern const int OUTL_PIN;
+extern const int OUTR_PIN;
 
-  //Joystick analogue in
-  extern const int JOYY_PIN;
-  extern const int JOYX_PIN;
+//Joystick analogue in
+extern const int JOYY_PIN;
+extern const int JOYX_PIN;
 
-  //Output multiplexer bits
-  extern const int DEN_BIT ;
-  extern const int DRST_BIT;
-  extern const int HKOW_BIT;
-  extern const int HKOE_BIT;
+//Output multiplexer bits
+extern const int DEN_BIT ;
+extern const int DRST_BIT;
+extern const int HKOW_BIT;
+extern const int HKOE_BIT;
 
-  //rotation variable
-  extern volatile int32_t knob3Rotation;
-  extern volatile int32_t knob2Rotation;
-  extern volatile int32_t knob1Rotation;
-  extern volatile int32_t knob0Rotation;
+//rotation variable
+extern volatile int32_t knob3Rotation;
+extern volatile int32_t knob2Rotation;
+extern volatile int32_t knob1Rotation;
+extern volatile int32_t knob0Rotation;
 
 
-  //sender receiver setting
-  extern volatile bool ifSender;
+//sender receiver setting
+extern volatile bool ifSender;
 
-  //global handle, mutex
-  extern SemaphoreHandle_t keyArrayMutex;
-  extern SemaphoreHandle_t rxMessageMutex;
-  extern SemaphoreHandle_t CAN_TX_Semaphore;
-  //SemaphoreHandle_t senderBoolMutex;
-  extern SemaphoreHandle_t sampleBufferSemaphore;
-  extern SemaphoreHandle_t stepSizeSemaphore;
-  //SemaphoreHandle_t waveformSemaphore;
+//global handle, mutex
+extern SemaphoreHandle_t keyArrayMutex;
+extern SemaphoreHandle_t rxMessageMutex;
+extern SemaphoreHandle_t CAN_TX_Semaphore;
 
-  //global queue handler
-  extern QueueHandle_t msgInQ;
-  extern QueueHandle_t msgOutQ;
+//SemaphoreHandle_t senderBoolMutex;
+extern SemaphoreHandle_t sampleBufferSemaphore;
+extern SemaphoreHandle_t stepSizeSemaphore;
+//SemaphoreHandle_t waveformSemaphore;
 
-  //received message
-  extern uint8_t RX_Message[8];
+//global queue handler
+extern QueueHandle_t msgInQ;
+extern QueueHandle_t msgOutQ;
 
-  
+//received message
+extern uint8_t RX_Message[8];
 
-//Display driver object
-//extern U8G2_SSD1305_128X32_NONAME_F_HW_I2C u8g2(U8G2_R0);
+
+
+extern volatile uint8_t possition;
+volatile uint8_t octave;
+
 
 uint8_t readCols(){
     uint8_t tmp = digitalRead(C3_PIN);
@@ -129,22 +132,6 @@ void scanKeysTask(void * pvParameters) {
   uint8_t TX_Message[12][8] = {0};
 
   const uint32_t stepSizes [] = {51076056,54113197,57330935,60740010,64351799,68178356,72232452,76527617,81078186,85899346,91007187,96418756};
-  /*
-  uint32_t step_sizes[12];
-  uint32_t current_freq = 440 * pow( pow(2.0, 1.0/12.0), -9); //key C frequency
-  
-  for(int i = 0; i < 12; i++)
-  {
-    step_sizes[i]= pow(2, 32) * current_freq / 22000;
-    
-    current_freq *= pow(2.0, 1.0/12.0);
-    Serial.print(current_freq);
-    Serial.print(" ");
-    
-  }*/
-  //UBaseType_t uxHighWaterMark;
-  //uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
-  // switches to make contents of the while loop run only once
   #ifdef TEST_SCANKEYS
   loopCondition = true;
   while(loopCondition){
@@ -154,16 +141,41 @@ void scanKeysTask(void * pvParameters) {
   while (1){
     vTaskDelayUntil( &xLastWakeTime, xFrequency );
   #endif
-    for (int i = 0; i<= 5; i ++) {
+
+    uint32_t local_key_array[7];
+
+    bool OutBits[7];
+    GenerateHandshake(OutBits);
+        
+
+    for (int i = 0; i<= 6; i ++) {
       //key scanning loop
       //row number is the array index
         uint8_t index = i;
         setRow(index);
+        digitalWrite(OUT_PIN, OutBits[i]);
         delayMicroseconds(3);
-        xSemaphoreTake(keyArrayMutex, portMAX_DELAY);
-        keyArray[i] = readCols();
-        xSemaphoreGive(keyArrayMutex);
+        local_key_array[i] = readCols();
     }
+    
+    xSemaphoreTake(keyArrayMutex, portMAX_DELAY);
+
+    for(int i = 0; i < 7; i++)
+    {
+      keyArray[i] = local_key_array[i];
+    }
+
+    xSemaphoreGive(keyArrayMutex);
+
+    //decode east and west signals
+    bool west_detect = ((local_key_array[5] & 0b1000) >> 3);
+    bool east_detect = ((local_key_array[6] & 0b1000) >> 3);
+
+    //read the octave
+    uint32_t octave_reading = knob2.readRotation();
+
+    
+
 
     bool flag = false;
     int32_t localStepSize[12] = {0};
@@ -241,8 +253,7 @@ void scanKeysTask(void * pvParameters) {
           //xSemaphoreGive(keyArrayMutex);
           __atomic_store_n(&knob1Rotation, knob1.readRotation(), __ATOMIC_RELAXED);
           __atomic_store_n(&knob0Rotation, knob0.readRotation(), __ATOMIC_RELAXED);
-        //}
-        //else if (i == 5){
+  
           if (bitRead(keyPressed,8) == 0)
           {
             //press knob 2 to set status to sender
@@ -262,17 +273,6 @@ void scanKeysTask(void * pvParameters) {
         TX_Message[i][1] = knob2.readRotation();
     }
     
-    /*
-    for (int i = 0; i < 12; i++){
-        if(localStepSize[i] != 0){
-          if (TX_Message[1] >= 4){
-            localStepSize[i] = localStepSize[i] << ((int32_t) TX_Message[1]-4);
-          }
-          else if(TX_Message[1] < 4){
-            localStepSize[i] = localStepSize[i] >> (4- (int32_t) TX_Message[1]);
-          }
-        }
-    }*/
     //another implementation
     
     if(TX_Message[1][1]>=4)
@@ -291,9 +291,6 @@ void scanKeysTask(void * pvParameters) {
         }
     }
 
-    //__atomic_store_n(&currentStepSize, localStepSize, __ATOMIC_RELAXED);
-    //__atomic_store_n(&ifSender, localIfSender, __ATOMIC_RELAXED);
-
     for(int i = 0; i<7; i++){
         previousKeyArray[i] = keyArray[i];
     }
@@ -306,6 +303,9 @@ void scanKeysTask(void * pvParameters) {
           }
           #ifndef TEST_SCANKEYS
           if(local_TX_Message[0]=='R' || local_TX_Message[0]=='P')
+
+
+
           xQueueSend( msgOutQ, local_TX_Message, portMAX_DELAY);
           #endif
           

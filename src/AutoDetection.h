@@ -6,10 +6,11 @@
 extern QueueHandle_t msgInQ;
 extern QueueHandle_t msgOutQ;
 
+extern volatile uint32_t octave;
+
 //function to detect the position of the keyboard
-bool* GenerateHandshake()
+void GenerateHandshake(bool outBits[])
 {
-    bool outBits[NUM_OUTPUT_BITS];
 
     outBits[0] = 0;
     outBits[1] = 0;
@@ -19,31 +20,15 @@ bool* GenerateHandshake()
     outBits[5] = 1;
     outBits[6] = 1;
 
-    return outBits;
 }
 
-uint8_t GenerateHashID()
-{   
-    uint32_t ID[3];
-
-    uint32_t ID[0] = IDHAL_GetUIDw0();
-    uint32_t ID[1] = IDHAL_GetUIDw1();
-    uint32_t ID[2] = IDHAL_GetUIDw2();
-
-    uint8_t HashId;
-
-    HashId = (ID[0] >> 26) + (ID[1] >> 26) + (ID[2] >> 26);
-
-    return HashId;
-}
-
-void PositionTX(uint8_t current_position)
+uint32_t* PositionTX(uint8_t current_position, uint8_t keyTXmsg[])
 {
     uint8_t AutoDetectionTX[8];
 
-    AutoDetectionTX[0] = 0; //keyTXmsg[0];
-    AutoDetectionTX[1] = 0; //keyTXmsg[1];
-    AutoDetectionTX[2] = 0; //keyTXmsg[2];
+    AutoDetectionTX[0] = keyTXmsg[0];
+    AutoDetectionTX[1] = keyTXmsg[1];
+    AutoDetectionTX[2] = keyTXmsg[2];
     AutoDetectionTX[3] = 0;
     AutoDetectionTX[4] = 0;
     AutoDetectionTX[5] = 0;
@@ -51,7 +36,7 @@ void PositionTX(uint8_t current_position)
     AutoDetectionTX[7] = current_position + 1;
 
 
-    xQueueSend(msgOutQ, AutoDetectionTX, portMAX_DELAY);
+    return AutoDetectionTX;
     
 }
 
@@ -64,21 +49,22 @@ uint8_t PositionRX()
     
 }
 
-uint8_t assign_possition (bool west_detect, bool east_detect)
+
+
+void assign_possition (bool west_detect, bool east_detect, uint8_t current_position, uint8_t TXposition, )
 {
-    uint8_t position = 0;
 
     //positions are assigned east to west
     //the detect singnals are active low
     if(west_detect == 1)
     {
         if(east_detect == 0)
-        {
-            return PositionRX();
+        {   
+            //receive position from east
         }
         else
         {
-            return 0;            
+                       
         }
     }
     else // there is a western keyboard
@@ -97,4 +83,5 @@ uint8_t assign_possition (bool west_detect, bool east_detect)
         }
     }
 }
+
 

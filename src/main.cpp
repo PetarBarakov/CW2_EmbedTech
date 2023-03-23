@@ -86,6 +86,11 @@ uint8_t sampleBuffer0[SAMPLE_BUFFER_SIZE];
 uint8_t sampleBuffer1[SAMPLE_BUFFER_SIZE];
 volatile bool writeBuffer1 = false;
 
+
+volatile uint8_t keyboard_ID;
+
+
+
 //testing execution time
 
 //#define TEST_SCANKEYS 1
@@ -102,6 +107,18 @@ volatile bool writeBuffer1 = false;
 
 
 //Function to set outputs using key matrix
+
+uint8_t GenerateKeyboardID()
+{   
+    uint32_t ID[3];
+
+    ID[0] = HAL_GetUIDw0();
+    ID[1] = HAL_GetUIDw1();
+    ID[2] = HAL_GetUIDw2();
+
+    keyboard_ID = (ID[0] >> 26) + (ID[1] >> 26) + (ID[2] >> 26);
+
+}
 
 void setOutMuxBit(const uint8_t bitIdx, const bool value) {
       digitalWrite(REN_PIN,LOW);
@@ -208,6 +225,8 @@ void CAN_TX_Task (void * pvParameters) {
 
 void setup() {
   // put your setup code here, to run once:
+
+  GenerateKeyboardID();
 
   //Set pin directions
   pinMode(RA0_PIN, OUTPUT);
