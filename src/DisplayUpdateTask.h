@@ -83,7 +83,9 @@ void displayUpdateTask(void * pvParameters) {
   TickType_t xLastWakeTime = xTaskGetTickCount();
   const String notes[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
   const String octaves[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8"};
-  const uint16_t Symbols[] = {0x25e2, 0x219d, 0x25fc, 0x25b2};
+  const uint16_t Symbols[] = {0x25e2, 0x219d, 0x25fc, 0x25b2}; //sawtooth, sine, square, tri
+  const uint32_t symbol_positions_x[] = {108, 108, 108, 108};
+  const uint32_t symbol_positions_y[] = {9, 14, 10, 13};
   //uint32_t ID=0x123;
   //uint8_t RX_Message[8]={0};
 
@@ -127,10 +129,10 @@ void displayUpdateTask(void * pvParameters) {
     //print sender/receiver status
       //xSemaphoreTake(senderBoolMutex, portMAX_DELAY);
       if(ifSender==1){
-        u8g2.print("S");
+        u8g2.print("Tx");
       }
       else{
-        u8g2.print("R");
+        u8g2.print("Rx");
       }
       #ifdef TEST_DISPLAY
         u8g2.print("S");
@@ -143,15 +145,24 @@ void displayUpdateTask(void * pvParameters) {
         //u8g2.print(keyArray[i],HEX); 
       //}
       u8g2.print("  ");
-      u8g2.print("vol: ");
+      
+      u8g2.setFont(u8g2_font_siji_t_6x10);
+
+      u8g2.drawGlyph(50, 10, 0xe05d);
+
+      u8g2.setFont(u8g2_font_helvR08_tr);
+
+      u8g2.setCursor(61, 10);
+      u8g2.print(": ");
+
       u8g2.print(knob3Rotation,DEC); 
       u8g2.print("  ");
       u8g2.print("wave:");
       u8g2.setFont(u8g2_font_unifont_t_symbols);
-      u8g2.drawGlyph(105, 10, Symbols[knob1Rotation]);
+      u8g2.drawGlyph(symbol_positions_x[knob1Rotation], symbol_positions_y[knob1Rotation], Symbols[knob1Rotation]);
       u8g2.setCursor(2,20);
       u8g2.setFont(u8g2_font_helvR08_tr);
-      u8g2.print("octave:");
+      u8g2.print("Octave: ");
       u8g2.print(knob2Rotation,DEC);
       
      
@@ -174,7 +185,16 @@ void displayUpdateTask(void * pvParameters) {
         }
       }
       */
-     u8g2.setCursor(2, 30);
+
+      u8g2.drawLine(0, 21, 130, 21);
+      u8g2.setCursor(13, 31);
+      u8g2.print(':');
+      u8g2.setFont(u8g2_font_siji_t_6x10);
+
+      u8g2.drawGlyph(3, 32, 0xe272);
+
+      u8g2.setFont(u8g2_font_helvR08_tr);
+
      for (int i = 0; i< 12; i ++) {
         //reading keys
         if(!bitRead(keyPressedNote,i)){
@@ -188,8 +208,10 @@ void displayUpdateTask(void * pvParameters) {
         u8g2.print(notes[RX_MessageLocal[2]]);
         u8g2.print(RX_MessageLocal[1]);
       }
+      
 
       u8g2.sendBuffer();          // transfer internal memory to the display
+
 
     //Toggle LED
       digitalToggle(LED_BUILTIN);
