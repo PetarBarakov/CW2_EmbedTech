@@ -2,10 +2,10 @@
 
 1. [Introduction](#introduction)
 2. [Task Identification](#TaskIdentification)
-3. [Task timing Charachterisation](#Task Timing Charachterization, Critical Instant Analysis and Quantification of CPU Utilization)
-4. [Data structures](#Shared Data Structures, Methods Used to Guarantee Safe Access and Synchronization)
-5. [Dependencies](#Inter-Task Blocking Dependencies)
-6. [Advanced Features](#Advanced Features)
+3. [Task timing Charachterisation](#TaskTimingCharachterization,CriticalInstantAnalysisandQuantificationonCPUUtilization)
+4. [Data structures](#SharedDataStructures,MethodsUsedtoGuaranteeSafeAccessandSynchronization)
+5. [Dependencies](#Inter-TaskBlockingDependencies)
+6. [Advanced Features](#AdvancedFeatures)
 
 ## Introduction
 
